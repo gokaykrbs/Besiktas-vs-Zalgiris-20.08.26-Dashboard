@@ -935,9 +935,14 @@ else:
 
     # Opta Points calculation
     if has_played and "opta_points" in df_oyuncu.columns and not df_oyuncu.empty and pd.notna(df_oyuncu["opta_points"].iloc[0]):
-        opta_pts = float(df_oyuncu["opta_points"].iloc[0])
+        try:
+            opta_pts = float(df_oyuncu["opta_points"].iloc[0])
+        except (ValueError, TypeError):
+            opta_pts = None
     else:
         opta_pts = None
+
+    opta_str = f"{opta_pts:.2f}" if (opta_pts is not None and pd.notna(opta_pts)) else "—"
 
     # 1. Player Spotlight Scoreboard Box
     if has_played:
@@ -951,7 +956,7 @@ else:
                 </div>
                 <div>
                     <div class="score-center-badge" style="border-color: #2ed573; box-shadow: 0 0 25px rgba(46, 213, 115, 0.45);">
-                        {opta_pts:.2f} <span style="font-size: 1rem; color: #7bed9f;">PTS</span>
+                        {opta_str} <span style="font-size: 1rem; color: #7bed9f;">PTS</span>
                     </div>
                 </div>
                 <div class="team-col-right">
@@ -966,35 +971,8 @@ else:
             </div>
         </div>
         """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div class="scoreboard-box">
-            <div class="league-badge" style="background: linear-gradient(90deg, #475569, #64748b); box-shadow: 0 0 14px rgba(100, 116, 139, 0.4);">🪑 Unused Substitute • Match Roster</div>
-            <div class="scoreboard-grid">
-                <div class="team-col-left">
-                    <div class="team-title-text">#{jersey_no} {secilen.upper()}</div>
-                    <div class="team-scorers" style="color: #cbd5e1;">Position: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>0 Minutes Played (Did Not Play)</strong></div>
-                </div>
-                <div>
-                    <div class="score-center-badge" style="border-color: #64748b; box-shadow: 0 0 20px rgba(100, 116, 139, 0.25); color: #94a3b8; font-size: 2.1rem;">
-                        — <span style="font-size: 0.85rem; color: #64748b;">N/A</span>
-                    </div>
-                </div>
-                <div class="team-col-right">
-                    <div class="team-title-text" style="color: #cbd5e1;">🦅 BEŞİKTAŞ JK</div>
-                    <div class="team-scorers" style="color: #64748b;">Match Status: <strong>Bench / Yedek</strong></div>
-                </div>
-            </div>
-            <div class="match-venue-footer">
-                <span>🏟️ <strong>Tüpraş Stadium</strong>, Istanbul</span>
-                <span>⏱️ Played: <strong>0 Minutes (Süre Almadı)</strong></span>
-                <span>🏆 UEFA Europa League (Beşiktaş 3 - 0 Zalgiris)</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
 
-    # 2. Player Metrics Calculations
-    if has_played:
+        # 2. Player Metrics Calculations
         passes = df_active_actions[df_active_actions[act_c].str.contains("Pass", case=False, na=False)]
         total_passes = len(passes)
         
@@ -1021,7 +999,7 @@ else:
         with kpi1:
             st.metric(
                 label="⭐ OPTA RATING",
-                value=f"{opta_pts:.2f}" if opta_pts is not None else "—",
+                value=opta_str,
                 delta="🌟 MVP" if (opta_pts and opta_pts >= 9.5) else ("🔥 Masterclass" if (opta_pts and opta_pts >= 8.0) else "Solid")
             )
         with kpi2:
@@ -1048,51 +1026,17 @@ else:
                 value=f"{defensive_count} / {chances_count}",
                 delta=f"{chances_count} Key Chances" if chances_count > 0 else f"{defensive_count} Recoveries"
             )
-    else:
-        # Individual KPI Cards (Unused Sub)
-        kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
-        with kpi1:
-            st.metric(
-                label="⭐ OPTA RATING",
-                value="—",
-                delta="No Rating"
-            )
-        with kpi2:
-            st.metric(
-                label="⏱️ MINUTES PLAYED",
-                value="0'",
-                delta="Unused Substitute"
-            )
-        with kpi3:
-            st.metric(
-                label="🎯 PASS ACCURACY",
-                value="—",
-                delta="No Match Passes"
-            )
-        with kpi4:
-            st.metric(
-                label="⚽ SHOTS / GOALS",
-                value="0",
-                delta="No Attempts"
-            )
-        with kpi5:
-            st.metric(
-                label="🛡️ DEFENSE / CHANCES",
-                value="0 / 0",
-                delta="No Actions"
-            )
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # 3. Player Visualizations: Heatmap, Passing Map, and Shot Map
-    st.markdown(f"### 🏟️ #{jersey_no} {secilen} - Tactical Spatial Maps")
-    tab_p1, tab_p2, tab_p3 = st.tabs([
-        "🔥 Spatial Activity & Touch Heatmap",
-        "🎯 Accurate Passing Map & Vectors",
-        "⚽ Individual Shot Map & Trajectories"
-    ])
-    
-    if has_played:
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # 3. Player Visualizations: Heatmap, Passing Map, and Shot Map
+        st.markdown(f"### 🏟️ #{jersey_no} {secilen} - Tactical Spatial Maps")
+        tab_p1, tab_p2, tab_p3 = st.tabs([
+            "🔥 Spatial Activity & Touch Heatmap",
+            "🎯 Accurate Passing Map & Vectors",
+            "⚽ Individual Shot Map & Trajectories"
+        ])
+        
         # TAB P1: Heatmap
         with tab_p1:
             st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
@@ -1335,80 +1279,17 @@ else:
             st.pyplot(fig_p_shot, use_container_width=True)
             plt.close(fig_p_shot)
             
-    else:
-        # PITCHES FOR UNUSED SUBSTITUTES (Showing clean pitch with clear information)
-        with tab_p1:
-            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
-            pitch_un = Pitch(pitch_type='statsbomb', pitch_color='#0f3622', line_color='#ffffff', line_zorder=2, linewidth=1.8, goal_type='box')
-            fig_un, ax_un = pitch_un.draw(figsize=(10, 6.5))
-            fig_un.patch.set_facecolor('#09160f')
-            ax_un.text(
-                60, 40,
-                f"#{jersey_no} {secilen} bu maçta süre almamıştır.\nSaha içi temas ve ısı haritası verisi bulunmamaktadır.",
-                color='#cbd5e1',
-                fontsize=12,
-                fontweight='bold',
-                ha='center',
-                va='center',
-                bbox=dict(boxstyle='round,pad=0.8', facecolor='#0d1e15', edgecolor='rgba(255, 255, 255, 0.25)')
-            )
-            ax_un.set_title(f"#{jersey_no} {secilen} ({pos}) - Isı Haritası (Süre Almadı / 0')", fontsize=13, color='#ffffff', fontweight='bold', pad=10)
-            fig_un.tight_layout()
-            st.pyplot(fig_un, use_container_width=True)
-            plt.close(fig_un)
-            
-        with tab_p2:
-            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
-            pitch_un2 = Pitch(pitch_type='statsbomb', pitch_color='#0f3622', line_color='#ffffff', line_zorder=2, linewidth=1.8, goal_type='box')
-            fig_un2, ax_un2 = pitch_un2.draw(figsize=(10, 6.5))
-            fig_un2.patch.set_facecolor('#09160f')
-            ax_un2.text(
-                60, 40,
-                f"#{jersey_no} {secilen} bu maçta süre almamıştır.\nPas girişimi bulunmamaktadır.",
-                color='#cbd5e1',
-                fontsize=12,
-                fontweight='bold',
-                ha='center',
-                va='center',
-                bbox=dict(boxstyle='round,pad=0.8', facecolor='#0d1e15', edgecolor='rgba(255, 255, 255, 0.25)')
-            )
-            ax_un2.set_title(f"#{jersey_no} {secilen} - Pas Haritası (Süre Almadı / 0')", fontsize=13, color='#ffffff', fontweight='bold', pad=10)
-            fig_un2.tight_layout()
-            st.pyplot(fig_un2, use_container_width=True)
-            plt.close(fig_un2)
-
-        with tab_p3:
-            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
-            pitch_un3 = Pitch(pitch_type='statsbomb', pitch_color='#0f3622', line_color='#ffffff', line_zorder=2, linewidth=1.8, goal_type='box')
-            fig_un3, ax_un3 = pitch_un3.draw(figsize=(10, 6.5))
-            fig_un3.patch.set_facecolor('#09160f')
-            ax_un3.text(
-                60, 40,
-                f"#{jersey_no} {secilen} bu maçta süre almamıştır.\nŞut girişimi bulunmamaktadır.",
-                color='#cbd5e1',
-                fontsize=12,
-                fontweight='bold',
-                ha='center',
-                va='center',
-                bbox=dict(boxstyle='round,pad=0.8', facecolor='#0d1e15', edgecolor='rgba(255, 255, 255, 0.25)')
-            )
-            ax_un3.set_title(f"#{jersey_no} {secilen} - Şut Haritası (Süre Almadı / 0')", fontsize=13, color='#ffffff', fontweight='bold', pad=10)
-            fig_un3.tight_layout()
-            st.pyplot(fig_un3, use_container_width=True)
-            plt.close(fig_un3)
-
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
     
-    # 4. Individual Charts
-    p_graf1, p_graf2 = st.columns(2)
-    
-    with p_graf1:
-        st.markdown("#### 📊 Action Distribution")
-        if has_played and not df_active_actions.empty:
+        # 4. Individual Charts
+        p_graf1, p_graf2 = st.columns(2)
+        
+        with p_graf1:
+            st.markdown("#### 📊 Action Distribution")
             act_cl = "action_type" if "action_type" in df_active_actions.columns else "aksiyon_turu"
             p_act = df_active_actions[act_cl].value_counts().reset_index()
             p_act.columns = ["Action Type", "Count"]
-            max_p_act = p_act["Count"].max() if not p_act.empty else 50
+            max_p_act = max(10, int(p_act["Count"].max())) if not p_act.empty else 10
             
             fig_bar = px.bar(
                 p_act,
@@ -1436,50 +1317,47 @@ else:
                 height=320
             )
             st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
-        else:
-            st.info(f"📊 #{jersey_no} {secilen} bu karşılaşmada süre almadığı için kayıtlı aksiyon dağılımı bulunmamaktadır.")
             
-    with p_graf2:
-        st.markdown("#### ⚽ Pass Completion Rate")
-        if has_played and total_passes > 0:
-            pas_pie_df = pd.DataFrame({
-                "Status": ["Accurate Passes", "Incompleted Passes"],
-                "Count": [accurate_passes, inaccurate_passes]
-            })
-            
-            fig_pie = px.pie(
-                pas_pie_df,
-                names="Status",
-                values="Count",
-                color="Status",
-                color_discrete_map={
-                    "Accurate Passes": "#2ed573",
-                    "Incompleted Passes": "#ff4757"
-                },
-                hole=0.5
-            )
-            fig_pie.update_traces(
-                textinfo='percent+label',
-                textfont_size=12,
-                textfont_color=['#000000', '#ffffff'],
-                marker=dict(line=dict(color='#0d1a13', width=2))
-            )
-            fig_pie.update_layout(
-                autosize=True,
-                plot_bgcolor="rgba(16, 38, 27, 0.75)",
-                paper_bgcolor="rgba(16, 38, 27, 0.75)",
-                font_color="#ffffff",
-                legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5, font=dict(size=11)),
-                margin=dict(l=15, r=15, t=25, b=25),
-                height=320
-            )
-            st.plotly_chart(fig_pie, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
-        else:
-            st.info(f"⚽ #{jersey_no} {secilen} bu karşılaşmada süre almadığı için pas tamamlama verisi bulunmamaktadır.")
-
-    # 5. Detailed Event Logs Expander
-    with st.expander(f"📋 Detailed Event Logs for #{jersey_no} {secilen} ({mins_played} Minutes Played)"):
-        if has_played and not df_active_actions.empty:
+        with p_graf2:
+            st.markdown("#### ⚽ Pass Completion Rate")
+            if total_passes > 0:
+                pas_pie_df = pd.DataFrame({
+                    "Status": ["Accurate Passes", "Incompleted Passes"],
+                    "Count": [accurate_passes, inaccurate_passes]
+                })
+                
+                fig_pie = px.pie(
+                    pas_pie_df,
+                    names="Status",
+                    values="Count",
+                    color="Status",
+                    color_discrete_map={
+                        "Accurate Passes": "#2ed573",
+                        "Incompleted Passes": "#ff4757"
+                    },
+                    hole=0.5
+                )
+                fig_pie.update_traces(
+                    textinfo='percent+label',
+                    textfont_size=12,
+                    textfont_color='white',
+                    marker=dict(line=dict(color='#0d1a13', width=2))
+                )
+                fig_pie.update_layout(
+                    autosize=True,
+                    plot_bgcolor="rgba(16, 38, 27, 0.75)",
+                    paper_bgcolor="rgba(16, 38, 27, 0.75)",
+                    font_color="#ffffff",
+                    legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5, font=dict(size=11)),
+                    margin=dict(l=15, r=15, t=25, b=25),
+                    height=320
+                )
+                st.plotly_chart(fig_pie, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
+            else:
+                st.info("Bu oyuncuya ait kayıtlı pas verisi bulunmamaktadır.")
+    
+        # 5. Detailed Event Logs Expander
+        with st.expander(f"📋 Detailed Event Logs for #{jersey_no} {secilen} ({mins_played} Minutes Played)"):
             table_df = df_active_actions.copy()
             
             display_cols = {
@@ -1518,8 +1396,8 @@ else:
                     elif c == "end_y":
                         table_df["end_y"] = table_df["y"]
                     elif c == "opta_points":
-                        table_df["opta_points"] = opta_pts
-
+                        table_df["opta_points"] = opta_str
+    
             present_cols = [c for c in display_cols.keys() if c in table_df.columns]
             english_table = table_df[present_cols].rename(columns=display_cols)
             
@@ -1528,8 +1406,36 @@ else:
                 use_container_width=True,
                 hide_index=True
             )
-        else:
-            st.info("ℹ️ Bu oyuncu karşılaşmada süre almadığı (Unused Substitute) için sisteme kayıtlı saha içi maç olayı veya temas kaydı bulunmamaktadır (0 Olay).")
+    
+    else:
+        # CASE: UNUSED SUBSTITUTE (SÜRE ALMAYAN OYUNCU)
+        st.markdown(f"""
+        <div class="scoreboard-box">
+            <div class="league-badge" style="background: linear-gradient(90deg, #475569, #64748b); box-shadow: 0 0 14px rgba(100, 116, 139, 0.4);">🪑 Kadroda / Süre Almadı • Yedek Kulübesi</div>
+            <div class="scoreboard-grid">
+                <div class="team-col-left">
+                    <div class="team-title-text">#{jersey_no} {secilen.upper()}</div>
+                    <div class="team-scorers" style="color: #cbd5e1;">Mevki: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>Süre Almadı (0 Dakika)</strong></div>
+                </div>
+                <div>
+                    <div class="score-center-badge" style="border-color: #64748b; box-shadow: 0 0 20px rgba(100, 116, 139, 0.25); color: #94a3b8; font-size: 2.1rem;">
+                        — <span style="font-size: 0.85rem; color: #64748b;">N/A</span>
+                    </div>
+                </div>
+                <div class="team-col-right">
+                    <div class="team-title-text" style="color: #cbd5e1;">🦅 BEŞİKTAŞ JK</div>
+                    <div class="team-scorers" style="color: #94a3b8;">Maç Durumu: <strong>Yedek (Unused Sub)</strong></div>
+                </div>
+            </div>
+            <div class="match-venue-footer">
+                <span>🏟️ <strong>Tüpraş Stadyumu</strong>, İstanbul</span>
+                <span>⏱️ Oynanan Süre: <strong>0 Dakika</strong></span>
+                <span>🏆 UEFA Europa League (Beşiktaş 3 - 0 Zalgiris)</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.info(f"ℹ️ **#{jersey_no} {secilen}** ({pos}) bu karşılaşmada yedek kulübesinde yer almış olup süre almamıştır. Bu nedenle oyuncuya ait kayıtlı maç istatistiği, pas, şut veya temas verisi bulunmamaktadır.")
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #64748b; font-size: 0.8rem; padding: 10px 0 20px 0; line-height: 1.6;">
