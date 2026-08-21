@@ -19,26 +19,44 @@ st.set_page_config(
 )
 
 # ==============================================================================
-# STADIUM BROADCAST THEME (CSS) - CLEAN & RESPONSIVE
+# STADIUM BROADCAST THEME (CSS) - CLEAN, ULTRA-RESPONSIVE & MOBILE-OPTIMIZED
 # ==============================================================================
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Teko:wght@500;600;700&display=swap');
 
-    /* Global Atmosphere */
+    /* Global Atmosphere & Horizontal Overflow Prevention */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw;
+    }
+    
     .stApp {
         background: radial-gradient(circle at 50% 8%, #11261b 0%, #09130d 50%, #040806 100%);
         color: #ffffff;
         font-family: 'Montserrat', sans-serif;
+        overflow-x: hidden !important;
+    }
+    
+    /* Clean Container Padding for Both Desktop and Mobile */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2.5rem !important;
+        max-width: 1300px;
+    }
+
+    /* Prevent Column Blowout on Mobile */
+    div[data-testid="column"] {
+        min-width: 0 !important;
     }
     
     /* Clean Broadcast Scoreboard Card */
     .scoreboard-box {
         background: linear-gradient(135deg, rgba(16, 38, 27, 0.95) 0%, rgba(18, 22, 28, 0.95) 50%, rgba(160, 10, 24, 0.88) 100%);
         border: 1px solid rgba(46, 213, 115, 0.3);
-        border-radius: 18px;
-        padding: 24px 30px;
-        margin-bottom: 24px;
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
         box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     
@@ -53,14 +71,14 @@ st.markdown("""
         text-transform: uppercase;
         letter-spacing: 1.5px;
         box-shadow: 0 0 14px rgba(227, 6, 19, 0.5);
-        margin-bottom: 14px;
+        margin-bottom: 12px;
     }
 
     .scoreboard-grid {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
     }
     
     .team-col-left {
@@ -73,88 +91,98 @@ st.markdown("""
     
     .team-title-text {
         font-family: 'Teko', sans-serif;
-        font-size: 2.5rem;
+        font-size: 2.3rem;
         font-weight: 700;
         line-height: 1.1;
         letter-spacing: 0.5px;
         color: #ffffff;
         margin: 0;
         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        word-break: break-word;
     }
     
     .team-scorers {
         color: #7bed9f;
-        font-size: 0.88rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        margin-top: 6px;
-        line-height: 1.4;
+        margin-top: 4px;
+        line-height: 1.3;
     }
     
     .score-center-badge {
         font-family: 'Teko', sans-serif;
-        font-size: 3.2rem;
+        font-size: 3rem;
         font-weight: 700;
         color: #ffffff;
         background: rgba(0, 0, 0, 0.7);
-        padding: 6px 26px;
+        padding: 6px 22px;
         border-radius: 14px;
         border: 2px solid #e30613;
         box-shadow: 0 0 25px rgba(227, 6, 19, 0.55);
-        letter-spacing: 6px;
+        letter-spacing: 4px;
         line-height: 1;
         text-align: center;
-        min-width: 140px;
+        min-width: 120px;
+        display: inline-block;
     }
 
     .match-venue-footer {
         border-top: 1px solid rgba(255, 255, 255, 0.12);
-        margin-top: 16px;
-        padding-top: 12px;
+        margin-top: 14px;
+        padding-top: 10px;
         color: #a2b89b;
-        font-size: 0.88rem;
+        font-size: 0.82rem;
         font-weight: 500;
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
     }
     
     /* Holographic Metric Cards */
     div[data-testid="stMetric"] {
         background: linear-gradient(145deg, rgba(20, 42, 30, 0.88), rgba(10, 18, 14, 0.95));
         border: 1px solid rgba(46, 213, 115, 0.28);
-        border-radius: 14px;
-        padding: 14px 18px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(46, 213, 115, 0.05);
+        border-radius: 12px;
+        padding: 12px 14px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(46, 213, 115, 0.05);
         transition: all 0.25s ease;
+        margin-bottom: 8px;
     }
     
     div[data-testid="stMetric"]:hover {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         border-color: #ff4757;
-        box-shadow: 0 10px 28px rgba(227, 6, 19, 0.35);
+        box-shadow: 0 8px 24px rgba(227, 6, 19, 0.35);
     }
     
     div[data-testid="stMetricLabel"] > div {
         color: #7bed9f !important;
-        font-size: 0.82rem !important;
+        font-size: 0.78rem !important;
         font-weight: 700 !important;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
+        letter-spacing: 0.6px;
+        white-space: normal !important;
+        line-height: 1.2 !important;
     }
     
     div[data-testid="stMetricValue"] > div {
         color: #ffffff !important;
-        font-size: 2rem !important;
+        font-size: 1.8rem !important;
         font-weight: 800 !important;
         font-family: 'Teko', sans-serif;
         letter-spacing: 0.5px;
-        line-height: 1.2;
+        line-height: 1.1;
+        white-space: nowrap !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     div[data-testid="stMetricDelta"] > div {
-        font-size: 0.85rem !important;
+        font-size: 0.78rem !important;
         font-weight: 600 !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
     }
     
     /* Sidebar Navigation */
@@ -171,7 +199,7 @@ st.markdown("""
         padding: 8px 12px;
         font-weight: 600;
         text-align: left;
-        font-size: 0.86rem;
+        font-size: 0.85rem;
         transition: all 0.2s ease;
         margin-bottom: 2px;
     }
@@ -180,17 +208,17 @@ st.markdown("""
         background: linear-gradient(90deg, #e30613 0%, #ff4757 100%) !important;
         color: #ffffff !important;
         border-color: #ff6b81 !important;
-        transform: translateX(4px);
+        transform: translateX(3px);
         box-shadow: 0 0 14px rgba(227, 6, 19, 0.5) !important;
     }
     
     .sidebar-heading {
         color: #7bed9f;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-top: 14px;
+        margin-top: 12px;
         margin-bottom: 8px;
         display: flex;
         align-items: center;
@@ -201,31 +229,159 @@ st.markdown("""
         background: rgba(16, 38, 27, 0.7);
         border: 1px solid rgba(46, 213, 115, 0.25);
         border-radius: 8px;
-        padding: 8px 16px;
+        padding: 7px 14px;
         text-align: center;
         color: #7bed9f;
-        font-size: 0.88rem;
+        font-size: 0.82rem;
         font-weight: 700;
-        letter-spacing: 1px;
-        margin-top: 8px;
-        margin-bottom: 18px;
+        letter-spacing: 0.8px;
+        margin-top: 6px;
+        margin-bottom: 14px;
     }
 
+    /* Tabs Layout */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
+        gap: 8px;
+        flex-wrap: wrap;
     }
     .stTabs [data-baseweb="tab"] {
         background-color: #13241b;
         border: 1px solid rgba(46, 213, 115, 0.2);
         border-radius: 8px;
         color: #d1d5db;
-        padding: 8px 18px;
+        padding: 7px 14px;
         font-weight: 700;
+        font-size: 0.84rem;
+        white-space: normal;
+        text-align: center;
     }
     .stTabs [aria-selected="true"] {
         background: linear-gradient(90deg, #e30613, #ff4757) !important;
         color: #ffffff !important;
         border-color: #ff4757 !important;
+    }
+
+    /* Ensure Dataframe Tables Scroll Horizontally on Mobile Without Page Breaking */
+    div[data-testid="stDataFrame"] {
+        width: 100% !important;
+        overflow-x: auto !important;
+    }
+
+    /* =========================================================================
+       RESPONSIVE MEDIA QUERIES (MOBILE OPTIMIZATIONS)
+       ========================================================================= */
+    @media screen and (max-width: 768px) {
+        .block-container {
+            padding-top: 1.2rem !important;
+            padding-bottom: 1.5rem !important;
+            padding-left: 0.6rem !important;
+            padding-right: 0.6rem !important;
+        }
+
+        .scoreboard-box {
+            padding: 14px 12px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .scoreboard-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-col-left, .team-col-right {
+            text-align: center;
+            width: 100%;
+        }
+
+        .team-title-text {
+            font-size: 1.65rem;
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .team-scorers {
+            font-size: 0.76rem;
+            margin-top: 3px;
+            text-align: center;
+        }
+
+        .score-center-badge {
+            font-size: 2.2rem;
+            padding: 4px 18px;
+            letter-spacing: 3px;
+            min-width: 100px;
+            margin: 4px 0;
+        }
+
+        .league-badge {
+            font-size: 0.68rem;
+            padding: 4px 12px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        .match-venue-footer {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-size: 0.74rem;
+            gap: 4px;
+            margin-top: 10px;
+            padding-top: 8px;
+        }
+
+        div[data-testid="stMetric"] {
+            padding: 10px 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        div[data-testid="stMetricLabel"] > div {
+            font-size: 0.7rem !important;
+            letter-spacing: 0.3px;
+        }
+
+        div[data-testid="stMetricValue"] > div {
+            font-size: 1.45rem !important;
+        }
+
+        div[data-testid="stMetricDelta"] > div {
+            font-size: 0.7rem !important;
+        }
+
+        .attack-dir-banner {
+            font-size: 0.72rem;
+            padding: 5px 8px;
+            margin-bottom: 10px;
+            letter-spacing: 0.4px;
+        }
+
+        .stTabs [data-baseweb="tab"] {
+            font-size: 0.76rem;
+            padding: 6px 10px;
+            flex: 1 1 auto;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .team-title-text {
+            font-size: 1.45rem;
+        }
+        
+        .score-center-badge {
+            font-size: 1.9rem;
+            padding: 3px 14px;
+            letter-spacing: 2px;
+        }
+
+        div[data-testid="stMetricValue"] > div {
+            font-size: 1.3rem !important;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -451,7 +607,7 @@ if st.session_state.secilen_oyuncu is None:
             linewidth=1.8,
             goal_type='box'
         )
-        fig, ax = pitch.draw(figsize=(12, 7.5))
+        fig, ax = pitch.draw(figsize=(10, 6.5))
         fig.patch.set_facecolor('#09160f')
         
         x_all = bjk_events["x"].dropna()
@@ -481,14 +637,13 @@ if st.session_state.secilen_oyuncu is None:
             
         ax.set_title(
             "Beşiktaş JK - 90-Minute Spatial Pressure & Territorial Control",
-            fontsize=15,
+            fontsize=13,
             color='#ffffff',
             fontweight='bold',
-            pad=12
+            pad=10
         )
-        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
-        with p_col2:
-            st.pyplot(fig, use_container_width=True)
+        fig.tight_layout()
+        st.pyplot(fig, use_container_width=True)
         plt.close(fig)
 
     # TAB 2: Passing Flow
@@ -502,7 +657,7 @@ if st.session_state.secilen_oyuncu is None:
             linewidth=1.8,
             goal_type='box'
         )
-        fig_pass, ax_pass = pitch_pass.draw(figsize=(12, 7.5))
+        fig_pass, ax_pass = pitch_pass.draw(figsize=(10, 6.5))
         fig_pass.patch.set_facecolor('#09160f')
         
         act_col = "action_type" if "action_type" in bjk_events.columns else "aksiyon_turu"
@@ -542,16 +697,14 @@ if st.session_state.secilen_oyuncu is None:
             
         ax_pass.set_title(
             f"Beşiktaş JK - Match Passing Flow ({len(comp_passes)} Completed / {len(passes_df)} Total • 89% Precision)",
-            fontsize=14,
+            fontsize=13,
             color='#ffffff',
             fontweight='bold',
-            pad=12
+            pad=10
         )
-        ax_pass.legend(facecolor='#0d1e15', edgecolor='#2ed573', labelcolor='white', loc='upper left', fontsize=10)
-        
-        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
-        with p_col2:
-            st.pyplot(fig_pass, use_container_width=True)
+        ax_pass.legend(facecolor='#0d1e15', edgecolor='#2ed573', labelcolor='white', loc='upper left', fontsize=9)
+        fig_pass.tight_layout()
+        st.pyplot(fig_pass, use_container_width=True)
         plt.close(fig_pass)
         
     # TAB 3: Team Shot Map & Goal Trajectories
@@ -565,7 +718,7 @@ if st.session_state.secilen_oyuncu is None:
             linewidth=1.8,
             goal_type='box'
         )
-        fig_shot, ax_shot = pitch_shot.draw(figsize=(12, 7.5))
+        fig_shot, ax_shot = pitch_shot.draw(figsize=(10, 6.5))
         fig_shot.patch.set_facecolor('#09160f')
         
         act_col_shot = "action_type" if "action_type" in bjk_events.columns else "aksiyon_turu"
@@ -596,10 +749,10 @@ if st.session_state.secilen_oyuncu is None:
             pitch_shot.scatter(
                 off_target_df["x"], off_target_df["y"],
                 ax=ax_shot,
-                s=110,
+                s=100,
                 c='#ff4757',
                 marker='x',
-                linewidths=2.5,
+                linewidths=2.2,
                 label=f'Shot Off Target ({len(off_target_df)})',
                 zorder=3
             )
@@ -607,7 +760,7 @@ if st.session_state.secilen_oyuncu is None:
             pitch_shot.scatter(
                 blocked_df["x"], blocked_df["y"],
                 ax=ax_shot,
-                s=100,
+                s=90,
                 c='#a855f7',
                 marker='s',
                 edgecolors='#ffffff',
@@ -619,7 +772,7 @@ if st.session_state.secilen_oyuncu is None:
             pitch_shot.scatter(
                 on_target_df["x"], on_target_df["y"],
                 ax=ax_shot,
-                s=130,
+                s=120,
                 c='#2ed573',
                 marker='o',
                 edgecolors='#ffffff',
@@ -631,7 +784,7 @@ if st.session_state.secilen_oyuncu is None:
             pitch_shot.scatter(
                 goals_df["x"], goals_df["y"],
                 ax=ax_shot,
-                s=280,
+                s=260,
                 c='#ffd700',
                 marker='*',
                 edgecolors='#e30613',
@@ -645,7 +798,7 @@ if st.session_state.secilen_oyuncu is None:
                     g_row["x"], g_row["y"] - 3.2,
                     f"⚽ {p_name_short}",
                     color='#ffd700',
-                    fontsize=10,
+                    fontsize=9.5,
                     fontweight='bold',
                     ha='center',
                     zorder=6
@@ -653,16 +806,14 @@ if st.session_state.secilen_oyuncu is None:
             
         ax_shot.set_title(
             f"Beşiktaş JK - Match Shot Map ({len(goals_df)} Goals • {len(on_target_df) + len(goals_df)} On Target / {len(shots_df)} Total Shots)",
-            fontsize=14,
+            fontsize=13,
             color='#ffffff',
             fontweight='bold',
-            pad=12
+            pad=10
         )
-        ax_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=10)
-        
-        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
-        with p_col2:
-            st.pyplot(fig_shot, use_container_width=True)
+        ax_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=9)
+        fig_shot.tight_layout()
+        st.pyplot(fig_shot, use_container_width=True)
         plt.close(fig_shot)
     
     st.markdown("<br>", unsafe_allow_html=True)
@@ -691,16 +842,17 @@ if st.session_state.secilen_oyuncu is None:
             marker_line_width=1.2
         )
         fig_team_bar.update_layout(
+            autosize=True,
             plot_bgcolor="rgba(16, 38, 27, 0.75)",
             paper_bgcolor="rgba(16, 38, 27, 0.75)",
             font_color="#ffffff",
-            xaxis=dict(showgrid=False, title=""),
-            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Actions", range=[0, max_action * 1.25]),
+            xaxis=dict(showgrid=False, title="", tickfont=dict(size=11)),
+            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Actions", range=[0, max_action * 1.25], tickfont=dict(size=11)),
             coloraxis_showscale=False,
-            margin=dict(l=20, r=20, t=30, b=20),
-            height=340
+            margin=dict(l=15, r=15, t=25, b=15),
+            height=320
         )
-        st.plotly_chart(fig_team_bar, use_container_width=True)
+        st.plotly_chart(fig_team_bar, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
         
     with g_col2:
         st.markdown("#### ⏱️ Match Timeline & Key Moments")
@@ -748,8 +900,8 @@ else:
                 <div class="team-scorers">Position: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>{mins_played} Minutes Played</strong> ({sub_status})</div>
             </div>
             <div>
-                <div class="score-center-badge" style="border-color: #2ed573; box-shadow: 0 0 25px rgba(46, 213, 115, 0.45); font-size: 2.8rem;">
-                    {opta_pts:.2f} <span style="font-size: 1.1rem; color: #7bed9f;">PTS</span>
+                <div class="score-center-badge" style="border-color: #2ed573; box-shadow: 0 0 25px rgba(46, 213, 115, 0.45);">
+                    {opta_pts:.2f} <span style="font-size: 1rem; color: #7bed9f;">PTS</span>
                 </div>
             </div>
             <div class="team-col-right">
@@ -846,7 +998,7 @@ else:
             linewidth=1.8,
             goal_type='box'
         )
-        fig_indiv, ax_indiv = pitch_indiv.draw(figsize=(12, 7.5))
+        fig_indiv, ax_indiv = pitch_indiv.draw(figsize=(10, 6.5))
         fig_indiv.patch.set_facecolor('#09160f')
         
         px_coords = df_oyuncu['x'].dropna()
@@ -887,14 +1039,13 @@ else:
             
         ax_indiv.set_title(
             f"#{jersey_no} {secilen} ({pos}) - Ball Contact Heatmap & Influence Zones ({mins_played}' Played)",
-            fontsize=15,
+            fontsize=13,
             color='#ffffff',
             fontweight='bold',
-            pad=12
+            pad=10
         )
-        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
-        with p_col2:
-            st.pyplot(fig_indiv, use_container_width=True)
+        fig_indiv.tight_layout()
+        st.pyplot(fig_indiv, use_container_width=True)
         plt.close(fig_indiv)
 
     # TAB P2: Passing Map
@@ -908,7 +1059,7 @@ else:
             linewidth=1.8,
             goal_type='box'
         )
-        fig_p_pass, ax_p_pass = pitch_p_pass.draw(figsize=(12, 7.5))
+        fig_p_pass, ax_p_pass = pitch_p_pass.draw(figsize=(10, 6.5))
         fig_p_pass.patch.set_facecolor('#09160f')
         
         succ_p = "is_successful" if "is_successful" in passes.columns else "basarili"
@@ -945,16 +1096,14 @@ else:
             
         ax_p_pass.set_title(
             f"#{jersey_no} {secilen} - Accurate Passing Map ({accurate_passes} Completed / {total_passes} Total • {pass_acc:.1f}% Accuracy)",
-            fontsize=14,
+            fontsize=13,
             color='#ffffff',
             fontweight='bold',
-            pad=12
+            pad=10
         )
-        ax_p_pass.legend(facecolor='#0d1e15', edgecolor='#2ed573', labelcolor='white', loc='upper left', fontsize=10)
-        
-        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
-        with p_col2:
-            st.pyplot(fig_p_pass, use_container_width=True)
+        ax_p_pass.legend(facecolor='#0d1e15', edgecolor='#2ed573', labelcolor='white', loc='upper left', fontsize=9)
+        fig_p_pass.tight_layout()
+        st.pyplot(fig_p_pass, use_container_width=True)
         plt.close(fig_p_pass)
 
     # TAB P3: Individual Shot Map
@@ -968,7 +1117,7 @@ else:
             linewidth=1.8,
             goal_type='box'
         )
-        fig_p_shot, ax_p_shot = pitch_p_shot.draw(figsize=(12, 7.5))
+        fig_p_shot, ax_p_shot = pitch_p_shot.draw(figsize=(10, 6.5))
         fig_p_shot.patch.set_facecolor('#09160f')
         
         if not player_shots.empty:
@@ -996,10 +1145,10 @@ else:
                 pitch_p_shot.scatter(
                     p_off_target["x"], p_off_target["y"],
                     ax=ax_p_shot,
-                    s=120,
+                    s=110,
                     c='#ff4757',
                     marker='x',
-                    linewidths=2.5,
+                    linewidths=2.2,
                     label=f'Off Target ({len(p_off_target)})',
                     zorder=3
                 )
@@ -1007,19 +1156,19 @@ else:
                 pitch_p_shot.scatter(
                     p_blocked["x"], p_blocked["y"],
                     ax=ax_p_shot,
-                    s=110,
+                    s=100,
                     c='#a855f7',
                     marker='s',
                     edgecolors='#ffffff',
                     linewidths=1.2,
                     label=f'Blocked ({len(p_blocked)})',
                     zorder=3
-                )
+            )
             if not p_on_target.empty:
                 pitch_p_shot.scatter(
                     p_on_target["x"], p_on_target["y"],
                     ax=ax_p_shot,
-                    s=140,
+                    s=120,
                     c='#2ed573',
                     marker='o',
                     edgecolors='#ffffff',
@@ -1031,7 +1180,7 @@ else:
                 pitch_p_shot.scatter(
                     p_goals["x"], p_goals["y"],
                     ax=ax_p_shot,
-                    s=320,
+                    s=280,
                     c='#ffd700',
                     marker='*',
                     edgecolors='#e30613',
@@ -1044,7 +1193,7 @@ else:
                         g_row["x"], g_row["y"] - 3.2,
                         f"⚽ {g_row.get('outcome', 'Goal')}",
                         color='#ffd700',
-                        fontsize=11,
+                        fontsize=10,
                         fontweight='bold',
                         ha='center',
                         zorder=6
@@ -1052,33 +1201,32 @@ else:
                     
             ax_p_shot.set_title(
                 f"#{jersey_no} {secilen} - Individual Shot Map ({goals_count} Goals • {shots_count} Total Shots)",
-                fontsize=14,
+                fontsize=13,
                 color='#ffffff',
                 fontweight='bold',
-                pad=12
+                pad=10
             )
-            ax_p_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=10)
+            ax_p_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=9)
         else:
             ax_p_shot.text(
                 60, 40,
                 f"No shot attempts recorded for #{jersey_no} {secilen} in this match.",
                 color='#94a3b8',
-                fontsize=13,
+                fontsize=12,
                 fontweight='bold',
                 ha='center',
                 va='center'
             )
             ax_p_shot.set_title(
                 f"#{jersey_no} {secilen} - Shot Map (0 Shots)",
-                fontsize=14,
+                fontsize=13,
                 color='#ffffff',
                 fontweight='bold',
-                pad=12
+                pad=10
             )
             
-        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
-        with p_col2:
-            st.pyplot(fig_p_shot, use_container_width=True)
+        fig_p_shot.tight_layout()
+        st.pyplot(fig_p_shot, use_container_width=True)
         plt.close(fig_p_shot)
         
     st.markdown("<br>", unsafe_allow_html=True)
@@ -1108,16 +1256,17 @@ else:
             marker_line_width=1.2
         )
         fig_bar.update_layout(
+            autosize=True,
             plot_bgcolor="rgba(16, 38, 27, 0.75)",
             paper_bgcolor="rgba(16, 38, 27, 0.75)",
             font_color="#ffffff",
-            xaxis=dict(showgrid=False, title=""),
-            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Count", range=[0, max_p_act * 1.25]),
+            xaxis=dict(showgrid=False, title="", tickfont=dict(size=11)),
+            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Count", range=[0, max_p_act * 1.25], tickfont=dict(size=11)),
             coloraxis_showscale=False,
-            margin=dict(l=20, r=20, t=30, b=20),
-            height=340
+            margin=dict(l=15, r=15, t=25, b=15),
+            height=320
         )
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
         
     with p_graf2:
         st.markdown("#### ⚽ Pass Completion Rate")
@@ -1140,19 +1289,20 @@ else:
             )
             fig_pie.update_traces(
                 textinfo='percent+label',
-                textfont_size=13,
+                textfont_size=12,
                 textfont_color=['#000000', '#ffffff'],
                 marker=dict(line=dict(color='#0d1a13', width=2))
             )
             fig_pie.update_layout(
+                autosize=True,
                 plot_bgcolor="rgba(16, 38, 27, 0.75)",
                 paper_bgcolor="rgba(16, 38, 27, 0.75)",
                 font_color="#ffffff",
-                legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5),
-                margin=dict(l=20, r=20, t=30, b=20),
-                height=340
+                legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5, font=dict(size=11)),
+                margin=dict(l=15, r=15, t=25, b=25),
+                height=320
             )
-            st.plotly_chart(fig_pie, use_container_width=True)
+            st.plotly_chart(fig_pie, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
         else:
             st.info("No registered pass actions for this player in this match.")
 
