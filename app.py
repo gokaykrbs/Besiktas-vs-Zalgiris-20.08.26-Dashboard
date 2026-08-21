@@ -1354,7 +1354,7 @@ else:
                 )
                 st.plotly_chart(fig_pie, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
             else:
-                st.info("Bu oyuncuya ait kayıtlı pas verisi bulunmamaktadır.")
+                st.info("No recorded pass actions found for this player in this match.")
     
         # 5. Detailed Event Logs Expander
         with st.expander(f"📋 Detailed Event Logs for #{jersey_no} {secilen} ({mins_played} Minutes Played)"):
@@ -1408,14 +1408,14 @@ else:
             )
     
     else:
-        # CASE: UNUSED SUBSTITUTE (SÜRE ALMAYAN OYUNCU)
+        # CASE: UNUSED SUBSTITUTE (0 MINUTES PLAYED)
         st.markdown(f"""
         <div class="scoreboard-box">
-            <div class="league-badge" style="background: linear-gradient(90deg, #475569, #64748b); box-shadow: 0 0 14px rgba(100, 116, 139, 0.4);">🪑 Kadroda / Süre Almadı • Yedek Kulübesi</div>
+            <div class="league-badge" style="background: linear-gradient(90deg, #475569, #64748b); box-shadow: 0 0 14px rgba(100, 116, 139, 0.4);">🪑 Matchday Squad • Unused Substitute</div>
             <div class="scoreboard-grid">
                 <div class="team-col-left">
                     <div class="team-title-text">#{jersey_no} {secilen.upper()}</div>
-                    <div class="team-scorers" style="color: #cbd5e1;">Mevki: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>Süre Almadı (0 Dakika)</strong></div>
+                    <div class="team-scorers" style="color: #cbd5e1;">Position: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>0 Minutes Played (Did Not Play)</strong></div>
                 </div>
                 <div>
                     <div class="score-center-badge" style="border-color: #64748b; box-shadow: 0 0 20px rgba(100, 116, 139, 0.25); color: #94a3b8; font-size: 2.1rem;">
@@ -1424,18 +1424,18 @@ else:
                 </div>
                 <div class="team-col-right">
                     <div class="team-title-text" style="color: #cbd5e1;">🦅 BEŞİKTAŞ JK</div>
-                    <div class="team-scorers" style="color: #94a3b8;">Maç Durumu: <strong>Yedek (Unused Sub)</strong></div>
+                    <div class="team-scorers" style="color: #94a3b8;">Match Status: <strong>Bench (Unused Sub)</strong></div>
                 </div>
             </div>
             <div class="match-venue-footer">
-                <span>🏟️ <strong>Tüpraş Stadyumu</strong>, İstanbul</span>
-                <span>⏱️ Oynanan Süre: <strong>0 Dakika</strong></span>
+                <span>🏟️ <strong>Tüpraş Stadium</strong>, Istanbul</span>
+                <span>⏱️ Minutes Played: <strong>0 Minutes</strong></span>
                 <span>🏆 UEFA Europa League (Beşiktaş 3 - 0 Zalgiris)</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        st.info(f"ℹ️ **#{jersey_no} {secilen}** ({pos}) bu karşılaşmada yedek kulübesinde yer almış olup süre almamıştır. Bu nedenle oyuncuya ait kayıtlı maç istatistiği, pas, şut veya temas verisi bulunmamaktadır.")
+        st.info(f"ℹ️ **#{jersey_no} {secilen}** ({pos}) remained on the bench as an unused substitute for this fixture (0 Minutes Played). Therefore, no on-pitch actions, passes, shots, or statistical events were recorded.")
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #64748b; font-size: 0.8rem; padding: 10px 0 20px 0; line-height: 1.6;">

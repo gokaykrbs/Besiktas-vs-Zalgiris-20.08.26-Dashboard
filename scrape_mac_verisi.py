@@ -1,9 +1,9 @@
 """
 ===================================================================================
-PROJE: Beşiktaş vs FK Kauno Žalgiris (20.08.2026) Maç Verisi Scraping & Analiz
-GELİŞTİRİCİ: Antigravity AI Pair Programmer
-GÖREV: Sofascore ve Opta sayfalarından dinamik XHR/API interception ile veri çekip
-       besiktas_mac_verisi.csv ve ek analiz CSV dosyalarını üretmek.
+PROJECT: Beşiktaş JK vs FK Kauno Žalgiris (20.08.2026) Match Data Scraping & Analytics
+DEVELOPER: Antigravity AI Pair Programmer
+TASK: Extract match events via dynamic XHR/API interception from Sofascore & Opta
+      to produce besiktas_mac_verisi.csv and auxiliary analysis files.
 ===================================================================================
 """
 
@@ -16,7 +16,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright
 
-# UTF-8 Konsol çıkışı
+# UTF-8 Console Output
 if sys.platform.startswith('win'):
     sys.stdout.reconfigure(encoding='utf-8')
 
@@ -31,7 +31,7 @@ def normalize_text(text):
 
 async def main():
     print("=" * 70)
-    print("🚀 BEŞİKTAŞ vs KAUNO ŽALGIRIS MAÇ VERİSİ TOPLAMA BAŞLATILDI")
+    print("🚀 BEŞİKTAŞ VS KAUNO ŽALGIRIS MATCH DATA HARVESTING STARTED")
     print("=" * 70)
     
     sofascore_intercepted = {}
@@ -50,12 +50,10 @@ async def main():
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
             viewport={"width": 1920, "height": 1080},
             locale="en-GB"
-        )
-        
-        # ----------------------------------------------------
+        )        # ----------------------------------------------------
         # 1. SOFASCORE SCRAPING & NETWORK INTERCEPTION
         # ----------------------------------------------------
-        print("\n📡 [1/2] Sofascore API istekleri dinleniyor...")
+        print("\n📡 [1/2] Listening for Sofascore API requests...")
         page_sofa = await context.new_page()
         await page_sofa.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});")
         
@@ -76,11 +74,11 @@ async def main():
         try:
             await page_sofa.goto(SOFASCORE_URL, wait_until="networkidle", timeout=60000)
         except Exception as e:
-            print(f"  [Bilgi] Sofascore goto: {e}")
+            print(f"  [Info] Sofascore goto: {e}")
             
         await page_sofa.wait_for_timeout(3000)
         
-        # Sayfa içinden Sofascore API endpoint'lerini çağır
+        # Invoke Sofascore API endpoints from within the page context
         event_id = "16708137"
         direct_endpoints = [
             f"https://www.sofascore.com/api/v1/event/{event_id}",
@@ -101,13 +99,13 @@ async def main():
             except Exception:
                 pass
                 
-        print(f"  ✓ Sofascore'dan {len(sofascore_intercepted)} JSON API verisi başarıyla alındı.")
+        print(f"  ✓ Successfully retrieved {len(sofascore_intercepted)} JSON API responses from Sofascore.")
         await page_sofa.wait_for_timeout(1000)
         
         # ----------------------------------------------------
         # 2. OPTA SCRAPING & NETWORK INTERCEPTION
         # ----------------------------------------------------
-        print("\n📡 [2/2] Opta Player Stats (Opta Points & Action Metrics) çekiliyor...")
+        print("\n📡 [2/2] Fetching Opta Player Stats (Opta Points & Action Metrics)...")
         page_opta = await context.new_page()
         await page_opta.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});")
         
@@ -128,11 +126,11 @@ async def main():
         try:
             await page_opta.goto(OPTA_URL, wait_until="networkidle", timeout=60000)
         except Exception as e:
-            print(f"  [Bilgi] Opta goto: {e}")
+            print(f"  [Info] Opta goto: {e}")
             
         await page_opta.wait_for_timeout(4000)
         
-        # Cookie banner kapat
+        # Dismiss cookie banner
         try:
             btn = page_opta.locator("#uc-btn-accept-banner")
             if await btn.count() > 0:
@@ -141,29 +139,29 @@ async def main():
         except:
             pass
             
-        # Points görünümü
+        # Points view
         points_html = await page_opta.content()
         await page_opta.wait_for_timeout(1500)
         
-        # Stats görünümüne tıkla (aksiyon sayıları)
+        # Click stats view (action totals)
         try:
             stats_tab = page_opta.locator("text='Stats'").first
             if await stats_tab.count() > 0:
                 await stats_tab.click()
                 await page_opta.wait_for_timeout(2500)
         except Exception as e:
-            print(f"  [Uyarı] Stats tab tıklama: {e}")
+            print(f"  [Warning] Stats tab click: {e}")
             
         stats_html = await page_opta.content()
         await page_opta.wait_for_timeout(1500)
         
         await browser.close()
-        print("  ✓ Tarayıcı oturumu başarıyla kapatıldı.")
+        print("  ✓ Browser session closed successfully.")
 
     # ----------------------------------------------------
-    # 3. VERİLERİN AYRIŞTIRILMASI VE PANDAS İLE ENTEGRASYONU
+    # 3. DATA PARSING & INTEGRATION WITH PANDAS
     # ----------------------------------------------------
-    print("\n⚙️ Veriler işleniyor ve temizleniyor...")
+    print("\n⚙️ Processing and cleaning datasets...")
     
     # Sofascore Lineups
     sofa_lineup_key = f"https://www.sofascore.com/api/v1/event/{event_id}/lineups"
@@ -271,11 +269,11 @@ async def main():
     df_stats = parse_opta_dom(stats_html)
     df_pts = parse_opta_dom(points_html)
     
-    # Tekil oyuncu tablosu
+    # Unique player table
     df_stats_unique = df_stats.drop_duplicates(subset=["player_name", "minutes_played"]).copy()
     df_pts_unique = df_pts.drop_duplicates(subset=["player_name", "minutes_played"]).copy()
     
-    # Points kırılım sütunları
+    # Opta Points breakdown columns
     pts_cols = {
         "goals": "pts_goals",
         "shots_on_target": "pts_shots_on_target",
@@ -296,7 +294,7 @@ async def main():
     pts_sub = df_pts_unique[["player_name"] + list(pts_cols.keys())].rename(columns=pts_cols)
     df_main = pd.merge(df_stats_unique, pts_sub, on="player_name", how="left")
     
-    # Oyuncuları Sofascore kadroları ile eşleştir
+    # Map players with Sofascore rosters
     def map_team_and_info(row):
         p_name = row["player_name"]
         norm = normalize_text(p_name)
@@ -319,7 +317,7 @@ async def main():
 
     df_main[["team", "full_name", "position", "is_substitute", "jersey_number"]] = df_main.apply(map_team_and_info, axis=1)
 
-    # İstatistiksel metrikleri türet
+    # Derived statistical metrics
     df_main["total_shots"] = df_main["shots_on_target"] + df_main["shots_off_target"] + df_main["blocked_shots"]
     df_main["defensive_actions"] = df_main["tackles"] + df_main["interceptions"]
     df_main["match"] = "FK Kauno Žalgiris vs Beşiktaş JK"
@@ -327,7 +325,7 @@ async def main():
     df_main["competition"] = "UEFA Europa League"
     df_main["score"] = "3-0"
     
-    # Sütun düzeni (Streamlit ve mplsoccer görselleştirmeleri için kusursuz şablon)
+    # Column layout for Streamlit and mplsoccer visualizations
     column_order = [
         "match", "match_date", "competition", "score", "team",
         "full_name", "player_name", "jersey_number", "position", "opta_status", "is_substitute",
@@ -345,13 +343,13 @@ async def main():
     df_final = df_main[existing_cols]
 
     # ----------------------------------------------------
-    # 4. CSV DOSYALARININ KAYDEDİLMESİ
+    # 4. SAVE CSV DATASETS
     # ----------------------------------------------------
     out_main_csv = "besiktas_mac_verisi.csv"
     df_final.to_csv(out_main_csv, index=False, encoding="utf-8-sig")
-    print(f"\n📊 [1] Ana Maç ve Oyuncu Verisi Kaydedildi: '{out_main_csv}' ({len(df_final)} oyuncu)")
+    print(f"\n📊 [1] Primary Match & Player Dataset Saved: '{out_main_csv}' ({len(df_final)} players)")
     
-    # Olaylar / Incidents
+    # Incidents / Match Timeline Events
     sofa_incidents_key = f"https://www.sofascore.com/api/v1/event/{event_id}/incidents"
     sofa_incidents = sofascore_intercepted.get(sofa_incidents_key, {}).get("incidents", [])
     inc_rows = []
@@ -370,9 +368,9 @@ async def main():
         })
     df_inc = pd.DataFrame(inc_rows)
     df_inc.to_csv("mac_olaylari_incidents.csv", index=False, encoding="utf-8-sig")
-    print(f"📊 [2] Maç Olayları Zaman Çizelgesi Kaydedildi: 'mac_olaylari_incidents.csv' ({len(df_inc)} olay)")
+    print(f"📊 [2] Match Timeline Incidents Saved: 'mac_olaylari_incidents.csv' ({len(df_inc)} incidents)")
 
-    # Takım İstatistikleri
+    # Team Summary Statistics
     sofa_stats_key = f"https://www.sofascore.com/api/v1/event/{event_id}/statistics"
     sofa_team_stats = sofascore_intercepted.get(sofa_stats_key, {})
     if sofa_team_stats and "statistics" in sofa_team_stats:
@@ -393,15 +391,15 @@ async def main():
                     })
         df_team = pd.DataFrame(t_rows)
         df_team.to_csv("mac_takim_istatistikleri.csv", index=False, encoding="utf-8-sig")
-        print(f"📊 [3] Genel Takım İstatistikleri Kaydedildi: 'mac_takim_istatistikleri.csv' ({len(df_team)} metrik)")
+        print(f"📊 [3] General Team Statistics Saved: 'mac_takim_istatistikleri.csv' ({len(df_team)} metrics)")
 
-    # Raw JSON yedekleri
+    # Raw JSON backup
     with open("sofascore_api_raw.json", "w", encoding="utf-8") as f:
         json.dump(sofascore_intercepted, f, ensure_ascii=False, indent=2)
-    print("📁 [4] Ham Sofascore JSON verisi 'sofascore_api_raw.json' olarak arşivlendi.")
+    print("📁 [4] Raw Sofascore JSON Data Archived: 'sofascore_api_raw.json'")
 
     print("\n" + "=" * 70)
-    print("✨ TÜM GÖREVLER EKSİKSİZ TAMAMLANDI!")
+    print("✨ ALL TASKS COMPLETED SUCCESSFULLY!")
     print("=" * 70)
 
 if __name__ == "__main__":
