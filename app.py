@@ -12,188 +12,203 @@ import os
 # PAGE CONFIGURATION
 # ==============================================================================
 st.set_page_config(
-    page_title="Beşiktaş JK - Matchday Analytics Live",
+    page_title="Beşiktaş JK - Match Performance Analytics",
     page_icon="⚽",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ==============================================================================
-# HIGH-ENERGY STADIUM & BROADCAST THEME (CSS)
+# STADIUM BROADCAST THEME (CSS) - CLEAN & RESPONSIVE (NO TEXT OVERLAPS)
 # ==============================================================================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,500;0,700;0,900;1,700&family=Teko:wght@500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Teko:wght@500;600;700&display=swap');
 
-    /* Global Atmosphere */
+    /* Global Page Atmosphere */
     .stApp {
-        background: radial-gradient(circle at 50% 10%, #132219 0%, #0a110e 55%, #050807 100%);
+        background: radial-gradient(circle at 50% 8%, #11261b 0%, #09130d 50%, #040806 100%);
         color: #ffffff;
         font-family: 'Montserrat', sans-serif;
     }
     
-    /* Live Broadcast Match Scoreboard Header */
-    .scoreboard-banner {
-        background: linear-gradient(135deg, rgba(16, 37, 26, 0.9) 0%, rgba(20, 20, 25, 0.95) 50%, rgba(180, 10, 25, 0.85) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
+    /* Clean Broadcast Scoreboard Card (CSS Grid - Responsive & No Overlaps) */
+    .scoreboard-box {
+        background: linear-gradient(135deg, rgba(16, 38, 27, 0.95) 0%, rgba(18, 22, 28, 0.95) 50%, rgba(160, 10, 24, 0.88) 100%);
+        border: 1px solid rgba(46, 213, 115, 0.3);
+        border-radius: 18px;
         padding: 24px 30px;
-        margin-bottom: 25px;
-        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(16px);
-        position: relative;
-        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     
-    .scoreboard-banner::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        right: -20%;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(227, 6, 19, 0.25) 0%, transparent 70%);
-        pointer-events: none;
-    }
-    
-    .match-league-tag {
+    .league-badge {
         display: inline-block;
-        background: linear-gradient(90deg, #e30613, #ff414d);
+        background: linear-gradient(90deg, #e30613, #ff4757);
         color: #ffffff;
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 800;
-        padding: 4px 14px;
+        padding: 5px 16px;
         border-radius: 20px;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        box-shadow: 0 0 15px rgba(227, 6, 19, 0.5);
-        margin-bottom: 12px;
+        box-shadow: 0 0 14px rgba(227, 6, 19, 0.5);
+        margin-bottom: 14px;
     }
-    
-    .scoreboard-content {
-        display: flex;
-        justify-content: space-between;
+
+    .scoreboard-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
+        gap: 20px;
     }
     
-    .team-name-big {
+    .team-col-left {
+        text-align: left;
+    }
+    
+    .team-col-right {
+        text-align: right;
+    }
+    
+    .team-title-text {
         font-family: 'Teko', sans-serif;
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         font-weight: 700;
-        letter-spacing: 1px;
+        line-height: 1.1;
+        letter-spacing: 0.5px;
         color: #ffffff;
         margin: 0;
-        line-height: 1;
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     
-    .score-badge {
+    .team-scorers {
+        color: #7bed9f;
+        font-size: 0.88rem;
+        font-weight: 600;
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+    
+    .score-center-badge {
         font-family: 'Teko', sans-serif;
-        font-size: 3.5rem;
+        font-size: 3.2rem;
         font-weight: 700;
         color: #ffffff;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 4px 28px;
-        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 6px 26px;
+        border-radius: 14px;
         border: 2px solid #e30613;
-        box-shadow: 0 0 25px rgba(227, 6, 19, 0.6);
+        box-shadow: 0 0 25px rgba(227, 6, 19, 0.55);
         letter-spacing: 6px;
         line-height: 1;
+        text-align: center;
+        min-width: 140px;
     }
-    
-    .match-subtext {
-        color: #a3b899;
-        font-size: 0.95rem;
-        margin-top: 8px;
+
+    .match-venue-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        margin-top: 16px;
+        padding-top: 12px;
+        color: #a2b89b;
+        font-size: 0.88rem;
         font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     
-    /* Vibrant Holographic Metric Cards */
+    /* Holographic Metric Cards */
     div[data-testid="stMetric"] {
-        background: linear-gradient(145deg, rgba(21, 38, 29, 0.85), rgba(12, 20, 16, 0.95));
-        border: 1px solid rgba(46, 213, 115, 0.25);
+        background: linear-gradient(145deg, rgba(20, 42, 30, 0.88), rgba(10, 18, 14, 0.95));
+        border: 1px solid rgba(46, 213, 115, 0.28);
         border-radius: 14px;
-        padding: 16px 20px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(46, 213, 115, 0.05);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        padding: 14px 18px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(46, 213, 115, 0.05);
+        transition: all 0.25s ease;
     }
     
     div[data-testid="stMetric"]:hover {
-        transform: translateY(-4px) scale(1.02);
+        transform: translateY(-3px);
         border-color: #ff4757;
-        box-shadow: 0 12px 30px rgba(227, 6, 19, 0.4);
+        box-shadow: 0 10px 28px rgba(227, 6, 19, 0.35);
     }
     
     div[data-testid="stMetricLabel"] > div {
         color: #7bed9f !important;
-        font-size: 0.85rem !important;
+        font-size: 0.82rem !important;
         font-weight: 700 !important;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.8px;
     }
     
     div[data-testid="stMetricValue"] > div {
         color: #ffffff !important;
-        font-size: 2.2rem !important;
-        font-weight: 900 !important;
+        font-size: 2rem !important;
+        font-weight: 800 !important;
         font-family: 'Teko', sans-serif;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
+        line-height: 1.2;
     }
     
     div[data-testid="stMetricDelta"] > div {
+        font-size: 0.85rem !important;
         font-weight: 600 !important;
     }
     
-    /* Sidebar Atmosphere */
+    /* Sidebar Navigation */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0d1a13 0%, #070e0a 100%);
+        background: linear-gradient(180deg, #0d1e15 0%, #060d09 100%);
         border-right: 1px solid rgba(46, 213, 115, 0.2);
     }
     
     section[data-testid="stSidebar"] .stButton button {
-        background: linear-gradient(90deg, #13241b 0%, #192e23 100%);
+        background: linear-gradient(90deg, #13281c 0%, #1a3324 100%);
         color: #e2f0d9;
-        border: 1px solid rgba(46, 213, 115, 0.2);
-        border-radius: 10px;
-        padding: 9px 14px;
+        border: 1px solid rgba(46, 213, 115, 0.22);
+        border-radius: 9px;
+        padding: 8px 12px;
         font-weight: 600;
         text-align: left;
-        font-size: 0.88rem;
-        transition: all 0.25s ease;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        font-size: 0.86rem;
+        transition: all 0.2s ease;
+        margin-bottom: 2px;
     }
     
     section[data-testid="stSidebar"] .stButton button:hover {
         background: linear-gradient(90deg, #e30613 0%, #ff4757 100%) !important;
         color: #ffffff !important;
         border-color: #ff6b81 !important;
-        transform: translateX(6px);
-        box-shadow: 0 0 18px rgba(227, 6, 19, 0.6) !important;
+        transform: translateX(4px);
+        box-shadow: 0 0 14px rgba(227, 6, 19, 0.5) !important;
     }
     
-    .section-title {
+    .sidebar-heading {
         color: #7bed9f;
-        font-size: 1.15rem;
+        font-size: 0.95rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
+        margin-top: 14px;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-top: 15px;
-        margin-bottom: 10px;
+        gap: 6px;
     }
 
-    /* Pitch Container Glass Card */
-    .pitch-card {
-        background: rgba(14, 25, 19, 0.7);
-        border: 1px solid rgba(46, 213, 115, 0.2);
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    .attack-dir-banner {
+        background: rgba(16, 38, 27, 0.7);
+        border: 1px solid rgba(46, 213, 115, 0.25);
+        border-radius: 8px;
+        padding: 8px 16px;
+        text-align: center;
+        color: #7bed9f;
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-top: 8px;
+        margin-bottom: 18px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -221,33 +236,34 @@ df_all = load_match_data()
 if df_all.empty:
     st.stop()
 
-# Squad Definitions
+# Official Beşiktaş Matchday Squad with Exact Jersey Numbers
 STARTING_XI = [
-    {"name": "Alexander Nübel", "pos": "GK", "no": 1, "role": "Goalkeeper"},
-    {"name": "Amir Murillo", "pos": "DF", "no": 62, "role": "Right Back ⚽ (12')"},
-    {"name": "Tiago Djaló", "pos": "DF", "no": 3, "role": "Center Back"},
-    {"name": "Emirhan Topçu", "pos": "DF", "no": 14, "role": "Center Back ⭐ (9.54)"},
-    {"name": "Rıdvan Yılmaz", "pos": "DF", "no": 33, "role": "Left Back 🅰️🅰️ (2 Ast)"},
-    {"name": "Salih Özcan", "pos": "MF", "no": 6, "role": "Defensive Midfield"},
-    {"name": "Junior Olaitan", "pos": "MF", "no": 10, "role": "Central Midfield"},
-    {"name": "Orkun Kökçü", "pos": "MF", "no": 8, "role": "Playmaker ⚽ (60') 🌟 10.0"},
-    {"name": "Václav Černý", "pos": "MF", "no": 18, "role": "Right Winger"},
-    {"name": "Leandro Trossard", "pos": "FW", "no": 19, "role": "Left Winger"},
-    {"name": "Hyeon-gyu Oh", "pos": "FW", "no": 9, "role": "Striker ⚽ (6')"}
+    {"name": "Alexander Nübel", "pos": "GK", "no": 1},
+    {"name": "Amir Murillo", "pos": "DF", "no": 62},
+    {"name": "Tiago Djaló", "pos": "DF", "no": 35},
+    {"name": "Emirhan Topçu", "pos": "DF", "no": 53},
+    {"name": "Rıdvan Yılmaz", "pos": "DF", "no": 33},
+    {"name": "Salih Özcan", "pos": "MF", "no": 6},
+    {"name": "Junior Olaitan", "pos": "MF", "no": 15},
+    {"name": "Orkun Kökçü", "pos": "MF", "no": 10},
+    {"name": "Václav Černý", "pos": "MF", "no": 18},
+    {"name": "Leandro Trossard", "pos": "FW", "no": 19},
+    {"name": "Hyeon-gyu Oh", "pos": "FW", "no": 9}
 ]
 
 SUBSTITUTES = [
-    {"name": "İlhan Fakılı", "pos": "MF", "no": 29, "role": "Sub (46')"},
-    {"name": "Amir Hadžiahmetović", "pos": "MF", "no": 88, "role": "Sub (61')"},
-    {"name": "Dušan Vlahović", "pos": "FW", "no": 99, "role": "Sub (61')"},
-    {"name": "Milot Rashica", "pos": "FW", "no": 7, "role": "Sub (73')"},
-    {"name": "Kassoum Ouattara", "pos": "DF", "no": 24, "role": "Sub (82')"},
-    {"name": "Doğan Alemdar", "pos": "GK", "no": 96, "role": "Sub GK"},
-    {"name": "Emmanuel Agbadou", "pos": "DF", "no": 5, "role": "Sub DF"},
-    {"name": "Taylan Bulut", "pos": "DF", "no": 2, "role": "Sub DF"},
-    {"name": "Yasin Özcan", "pos": "DF", "no": 27, "role": "Sub DF"},
-    {"name": "Wilfred Ndidi", "pos": "MF", "no": 25, "role": "Sub MF"},
-    {"name": "Semih Kılıçsoy", "pos": "FW", "no": 90, "role": "Sub FW"}
+    {"name": "İlhan Fakılı", "pos": "MF", "no": 29},
+    {"name": "Amir Hadžiahmetović", "pos": "MF", "no": 5},
+    {"name": "Dušan Vlahović", "pos": "FW", "no": 24},
+    {"name": "Milot Rashica", "pos": "FW", "no": 7},
+    {"name": "Kassoum Ouattara", "pos": "DF", "no": 11},
+    {"name": "Doğan Alemdar", "pos": "GK", "no": 80},
+    {"name": "Emmanuel Agbadou", "pos": "DF", "no": 12},
+    {"name": "Taylan Bulut", "pos": "DF", "no": 22},
+    {"name": "Yasin Özcan", "pos": "DF", "no": 58},
+    {"name": "Wilfred Ndidi", "pos": "MF", "no": 4},
+    {"name": "Kartal Kayra Yılmaz", "pos": "MF", "no": 8},
+    {"name": "Semih Kılıçsoy", "pos": "FW", "no": 90}
 ]
 
 
@@ -255,11 +271,11 @@ SUBSTITUTES = [
 # 2. SIDEBAR - SQUAD NAVIGATION
 # ==============================================================================
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/2/20/Logo_of_Besiktas_JK.svg", width=85)
+    st.image("https://upload.wikimedia.org/wikipedia/commons/2/20/Logo_of_Besiktas_JK.svg", width=80)
     st.markdown("## 🦅 **BEŞİKTAŞ JK**")
-    st.markdown("🔥 **MATCHDAY SQUAD**")
+    st.caption("UEFA Europa League • 20 August 2026")
     
-    # Return to Team Stats Button
+    # Return to Full Team Stats Button
     if st.button("🏟️ 🦅 **FULL TEAM OVERVIEW**", use_container_width=True):
         st.session_state.secilen_oyuncu = None
         st.rerun()
@@ -267,7 +283,7 @@ with st.sidebar:
     st.markdown("---")
     
     # Starting XI
-    st.markdown("<div class='section-title'>⚡ STARTING XI</div>", unsafe_allow_html=True)
+    st.markdown("<div class='sidebar-heading'>⚡ STARTING XI</div>", unsafe_allow_html=True)
     for player in STARTING_XI:
         p_name = player["name"]
         p_no = player["no"]
@@ -284,7 +300,7 @@ with st.sidebar:
     st.markdown("---")
     
     # Substitutes
-    st.markdown("<div class='section-title'>🔄 BENCH & SUBS</div>", unsafe_allow_html=True)
+    st.markdown("<div class='sidebar-heading'>🔄 SUBSTITUTES</div>", unsafe_allow_html=True)
     for player in SUBSTITUTES:
         p_name = player["name"]
         p_no = player["no"]
@@ -300,29 +316,35 @@ with st.sidebar:
 
 
 # ==============================================================================
-# 3. MAIN DASHBOARD DISPLAY
+# 3. MAIN DASHBOARD CONTENT
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
 # CASE A: TEAM OVERVIEW (secilen_oyuncu is None)
 # ------------------------------------------------------------------------------
 if st.session_state.secilen_oyuncu is None:
-    # High-Impact Broadcast Scoreboard Header
+    # Non-overlapping CSS Grid Broadcast Scoreboard Header
     st.markdown("""
-    <div class="scoreboard-banner">
-        <div class="match-league-tag">🏆 UEFA Europa League • Full Time</div>
-        <div class="scoreboard-content">
-            <div>
-                <div class="team-name-big">🦅 BEŞİKTAŞ JK</div>
-                <div style="color: #7bed9f; font-weight: 700; font-size: 0.9rem;">⚽ H. Oh 6' &nbsp;|&nbsp; ⚽ A. Murillo 12' &nbsp;|&nbsp; ⚽ O. Kökçü (P) 60'</div>
+    <div class="scoreboard-box">
+        <div class="league-badge">🏆 UEFA Europa League • Full Time</div>
+        <div class="scoreboard-grid">
+            <div class="team-col-left">
+                <div class="team-title-text">🦅 BEŞİKTAŞ JK</div>
+                <div class="team-scorers">⚽ H. Oh 6' • ⚽ A. Murillo 12' • ⚽ O. Kökçü (P) 60'</div>
             </div>
-            <div class="score-badge">3 - 0</div>
-            <div style="text-align: right;">
-                <div class="team-name-big" style="color: #94a3b8;">FK KAUNO ŽALGIRIS</div>
-                <div style="color: #64748b; font-size: 0.9rem;">Clean Sheet Victory</div>
+            <div>
+                <div class="score-center-badge">3 - 0</div>
+            </div>
+            <div class="team-col-right">
+                <div class="team-title-text" style="color: #cbd5e1;">FK KAUNO ŽALGIRIS</div>
+                <div class="team-scorers" style="color: #94a3b8;">Clean Sheet Victory</div>
             </div>
         </div>
-        <div class="match-subtext">🏟️ Tüpraş Stadium, Istanbul &nbsp;•&nbsp; 👥 Attendance: 31,494 &nbsp;•&nbsp; ⚖️ Referee: Tobias Stieler</div>
+        <div class="match-venue-footer">
+            <span>🏟️ <strong>Tüpraş Stadium</strong>, Istanbul</span>
+            <span>👥 Attendance: <strong>31,494</strong></span>
+            <span>⚖️ Referee: <strong>Tobias Stieler</strong></span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -333,16 +355,17 @@ if st.session_state.secilen_oyuncu is None:
     with col2:
         st.metric(label="🎯 TOTAL SHOTS", value="21", delta="6 On Target • 3 Goals")
     with col3:
-        st.metric(label="⚽ TOTAL PASSES", value="620", delta="89% Passing Accuracy")
+        st.metric(label="⚽ TOTAL PASSES", value="620", delta="89% Accuracy")
     with col4:
-        st.metric(label="🚩 CORNER KICKS", value="15", delta="20+ Key Chances Created")
+        st.metric(label="🚩 CORNER KICKS", value="15", delta="20+ Key Chances")
         
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Full Team Pitch Control Heatmap
+    # Full Team Spatial Dominance Map
     st.markdown("### 🏟️ Live Match Spatial Dominance & Pressure Map")
+    st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
     
-    # Realistic Emerald Green Stadium Grass Pitch
+    # Emerald Stadium Grass Pitch
     pitch = Pitch(
         pitch_type='statsbomb',
         pitch_color='#0f3622',
@@ -352,15 +375,14 @@ if st.session_state.secilen_oyuncu is None:
         goal_type='box'
     )
     
-    fig, ax = pitch.draw(figsize=(12, 7.8))
-    fig.patch.set_facecolor('#0a1a11')
+    fig, ax = pitch.draw(figsize=(12, 7.5))
+    fig.patch.set_facecolor('#09160f')
     
     bjk_events = df_all[df_all["takim"] == "Beşiktaş JK"]
     x_all = bjk_events["x"].dropna()
     y_all = bjk_events["y"].dropna()
     
     if len(x_all) > 10:
-        # Blazing Fire/Magma KDE Heatmap
         sns.kdeplot(
             x=x_all,
             y=y_all,
@@ -372,11 +394,10 @@ if st.session_state.secilen_oyuncu is None:
             alpha=0.72,
             zorder=1
         )
-        # Tactical ball-touch action points
         pitch.scatter(
             x_all, y_all,
             ax=ax,
-            s=30,
+            s=32,
             c='#ffffff',
             edgecolors='#e30613',
             alpha=0.55,
@@ -384,24 +405,12 @@ if st.session_state.secilen_oyuncu is None:
         )
         
     ax.set_title(
-        "🦅 Beşiktaş JK - 90-Minute High-Intensity Territorial Control & Heatmap",
-        fontsize=16,
+        "Beşiktaş JK - 90-Minute Spatial Pressure & Territorial Control",
+        fontsize=15,
         color='#ffffff',
         fontweight='bold',
-        pad=15
+        pad=12
     )
-    
-    # Attack Direction Indicator
-    pitch.arrows(
-        15, -4, 105, -4,
-        ax=ax,
-        color='#7bed9f',
-        width=2.5,
-        headwidth=5,
-        headlength=5,
-        zorder=4
-    )
-    ax.text(60, -7, "ATTACKING DIRECTION ➡️", color='#7bed9f', fontsize=11, fontweight='bold', ha='center')
     
     p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
     with p_col2:
@@ -410,14 +419,14 @@ if st.session_state.secilen_oyuncu is None:
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Bottom Visualizations: Action Breakdown & Timeline
+    # Team Bottom Visualizations
     g_col1, g_col2 = st.columns(2)
     with g_col1:
         st.markdown("#### ⚡ Team Action Breakdown")
         team_action_counts = bjk_events["aksiyon_turu"].value_counts().reset_index()
         team_action_counts.columns = ["Action Type", "Count"]
+        max_action = team_action_counts["Count"].max() if not team_action_counts.empty else 100
         
-        # High Energy Neon Theme Bar Chart
         fig_team_bar = px.bar(
             team_action_counts,
             x="Action Type",
@@ -433,11 +442,11 @@ if st.session_state.secilen_oyuncu is None:
             marker_line_width=1.2
         )
         fig_team_bar.update_layout(
-            plot_bgcolor="rgba(16, 36, 26, 0.7)",
-            paper_bgcolor="rgba(16, 36, 26, 0.7)",
+            plot_bgcolor="rgba(16, 38, 27, 0.75)",
+            paper_bgcolor="rgba(16, 38, 27, 0.75)",
             font_color="#ffffff",
             xaxis=dict(showgrid=False, title=""),
-            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Actions"),
+            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Actions", range=[0, max_action * 1.25]),
             coloraxis_showscale=False,
             margin=dict(l=20, r=20, t=30, b=20),
             height=340
@@ -471,24 +480,34 @@ else:
     opta_pts = df_oyuncu["opta_points"].iloc[0] if not df_oyuncu.empty else 6.00
     jersey_no = df_oyuncu["forma_no"].iloc[0] if "forma_no" in df_oyuncu.columns else ""
     
-    # Player Header Banner
+    # Player Spotlight Scoreboard Box
     st.markdown(f"""
-    <div class="scoreboard-banner">
-        <div class="match-league-tag">⭐ Player Spotlight • UEFA Europa League</div>
-        <div class="scoreboard-content">
-            <div>
-                <div class="team-name-big">#{jersey_no} {secilen.upper()}</div>
-                <div style="color: #7bed9f; font-weight: 700; font-size: 1.05rem;">Position: {pos} &nbsp;|&nbsp; 🦅 Beşiktaş JK</div>
+    <div class="scoreboard-box">
+        <div class="league-badge">⭐ Player Spotlight • Match Performance</div>
+        <div class="scoreboard-grid">
+            <div class="team-col-left">
+                <div class="team-title-text">#{jersey_no} {secilen.upper()}</div>
+                <div class="team-scorers">Position: {pos} &nbsp;|&nbsp; 🦅 Beşiktaş JK</div>
             </div>
-            <div class="score-badge" style="font-size: 2.8rem; border-color: #2ed573; box-shadow: 0 0 25px rgba(46, 213, 115, 0.5);">
-                {opta_pts:.2f} <span style="font-size: 1.2rem; color: #7bed9f;">PTS</span>
+            <div>
+                <div class="score-center-badge" style="border-color: #2ed573; box-shadow: 0 0 25px rgba(46, 213, 115, 0.45); font-size: 2.8rem;">
+                    {opta_pts:.2f} <span style="font-size: 1.1rem; color: #7bed9f;">PTS</span>
+                </div>
+            </div>
+            <div class="team-col-right">
+                <div class="team-title-text" style="color: #cbd5e1;">OPTA PERFORMANCE</div>
+                <div class="team-scorers" style="color: #94a3b8;">Individual Analytics</div>
             </div>
         </div>
-        <div class="match-subtext">Individual Matchday Performance & Tactical Analysis</div>
+        <div class="match-venue-footer">
+            <span>🏟️ <strong>Tüpraş Stadium</strong>, Istanbul</span>
+            <span>🏆 UEFA Europa League</span>
+            <span>🦅 Beşiktaş 3 - 0 Zalgiris</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Calculations
+    # Player Metrics Calculations
     passes = df_oyuncu[df_oyuncu["aksiyon_turu"].str.contains("Pass", case=False, na=False)]
     total_passes = len(passes)
     accurate_passes = int(passes["basarili_pas"].sum()) if "basarili_pas" in passes.columns else int(total_passes * 0.89)
@@ -506,7 +525,7 @@ else:
         st.metric(
             label="⭐ OPTA MATCH RATING",
             value=f"{opta_pts:.2f}",
-            delta="🌟 Man of the Match" if opta_pts >= 9.5 else ("🔥 Masterclass" if opta_pts >= 8.0 else "Solid Performance")
+            delta="🌟 Man of the Match" if opta_pts >= 9.5 else ("🔥 Masterclass" if opta_pts >= 8.0 else "Solid Match")
         )
     with kpi2:
         st.metric(
@@ -524,13 +543,14 @@ else:
         st.metric(
             label="🛡️ DEFENSE / SHOTS",
             value=f"{defensive_count} / {shots_count}",
-            delta=f"{shots_count} Shots on Goal" if shots_count > 0 else f"{defensive_count} Ball Recoveries"
+            delta=f"{shots_count} Shots on Goal" if shots_count > 0 else f"{defensive_count} Recoveries"
         )
         
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Individual Player Heatmap
+    # Individual Heatmap
     st.markdown(f"### 🏟️ #{jersey_no} {secilen} - Tactical Touch Zones & Heatmap")
+    st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
     
     pitch = Pitch(
         pitch_type='statsbomb',
@@ -541,8 +561,8 @@ else:
         goal_type='box'
     )
     
-    fig, ax = pitch.draw(figsize=(12, 7.8))
-    fig.patch.set_facecolor('#0a1a11')
+    fig, ax = pitch.draw(figsize=(12, 7.5))
+    fig.patch.set_facecolor('#09160f')
     
     px_coords = df_oyuncu['x'].dropna()
     py_coords = df_oyuncu['y'].dropna()
@@ -581,24 +601,12 @@ else:
         )
         
     ax.set_title(
-        f"#{jersey_no} {secilen} ({pos}) - Pitch Influence & Ball Contact Heatmap",
-        fontsize=16,
+        f"#{jersey_no} {secilen} ({pos}) - Ball Contact Heatmap & Influence Zones",
+        fontsize=15,
         color='#ffffff',
         fontweight='bold',
-        pad=15
+        pad=12
     )
-    
-    # Attack Indicator
-    pitch.arrows(
-        15, -4, 105, -4,
-        ax=ax,
-        color='#7bed9f',
-        width=2.5,
-        headwidth=5,
-        headlength=5,
-        zorder=4
-    )
-    ax.text(60, -7, "ATTACKING DIRECTION ➡️", color='#7bed9f', fontsize=11, fontweight='bold', ha='center')
     
     p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
     with p_col2:
@@ -614,6 +622,7 @@ else:
         st.markdown("#### 📊 Action Distribution")
         p_act = df_oyuncu["aksiyon_turu"].value_counts().reset_index()
         p_act.columns = ["Action Type", "Count"]
+        max_p_act = p_act["Count"].max() if not p_act.empty else 50
         
         fig_bar = px.bar(
             p_act,
@@ -630,11 +639,11 @@ else:
             marker_line_width=1.2
         )
         fig_bar.update_layout(
-            plot_bgcolor="rgba(16, 36, 26, 0.7)",
-            paper_bgcolor="rgba(16, 36, 26, 0.7)",
+            plot_bgcolor="rgba(16, 38, 27, 0.75)",
+            paper_bgcolor="rgba(16, 38, 27, 0.75)",
             font_color="#ffffff",
             xaxis=dict(showgrid=False, title=""),
-            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Count"),
+            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Count", range=[0, max_p_act * 1.25]),
             coloraxis_showscale=False,
             margin=dict(l=20, r=20, t=30, b=20),
             height=340
@@ -667,8 +676,8 @@ else:
                 marker=dict(line=dict(color='#0d1a13', width=2))
             )
             fig_pie.update_layout(
-                plot_bgcolor="rgba(16, 36, 26, 0.7)",
-                paper_bgcolor="rgba(16, 36, 26, 0.7)",
+                plot_bgcolor="rgba(16, 38, 27, 0.75)",
+                paper_bgcolor="rgba(16, 38, 27, 0.75)",
                 font_color="#ffffff",
                 legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5),
                 margin=dict(l=20, r=20, t=30, b=20),
