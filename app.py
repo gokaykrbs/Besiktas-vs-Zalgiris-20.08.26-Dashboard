@@ -249,7 +249,7 @@ def load_match_data():
     
     df = pd.read_csv(file_path)
     
-    # Safe normalization mapping to prevent ANY KeyError
+    # Safe normalization mapping
     if "player_name" not in df.columns and "oyuncu_adi" in df.columns:
         df["player_name"] = df["oyuncu_adi"]
     elif "oyuncu_adi" not in df.columns and "player_name" in df.columns:
@@ -430,12 +430,17 @@ if st.session_state.secilen_oyuncu is None:
         
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Team Pitch Control Tabs: Heatmap & Team Passing Vectors
+    # Team Pitch Control Tabs: Heatmap, Passing Network, and Shot Map
     st.markdown("### 🏟️ Match Dominance & Tactical Visualizations")
-    team_tab1, team_tab2 = st.tabs(["🔥 Spatial Heatmap & Pressure Zones", "🎯 Team Passing Network & Vectors"])
+    team_tab1, team_tab2, team_tab3 = st.tabs([
+        "🔥 Spatial Heatmap & Pressure Zones",
+        "🎯 Team Passing Flow & Vectors",
+        "⚽ Shot Map & Goal Trajectories"
+    ])
     
     bjk_events = df_all[df_all["takim"] == "Beşiktaş JK"] if "takim" in df_all.columns else df_all[df_all["team"] == "Beşiktaş JK"]
     
+    # TAB 1: Heatmap
     with team_tab1:
         st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
         pitch = Pitch(
@@ -486,6 +491,7 @@ if st.session_state.secilen_oyuncu is None:
             st.pyplot(fig, use_container_width=True)
         plt.close(fig)
 
+    # TAB 2: Passing Flow
     with team_tab2:
         st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
         pitch_pass = Pitch(
@@ -547,6 +553,117 @@ if st.session_state.secilen_oyuncu is None:
         with p_col2:
             st.pyplot(fig_pass, use_container_width=True)
         plt.close(fig_pass)
+        
+    # TAB 3: Team Shot Map & Goal Trajectories
+    with team_tab3:
+        st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+        pitch_shot = Pitch(
+            pitch_type='statsbomb',
+            pitch_color='#0f3622',
+            line_color='#ffffff',
+            line_zorder=2,
+            linewidth=1.8,
+            goal_type='box'
+        )
+        fig_shot, ax_shot = pitch_shot.draw(figsize=(12, 7.5))
+        fig_shot.patch.set_facecolor('#09160f')
+        
+        act_col_shot = "action_type" if "action_type" in bjk_events.columns else "aksiyon_turu"
+        shots_df = bjk_events[bjk_events[act_col_shot].str.contains("Shot", case=False, na=False)].copy()
+        
+        goals_df = shots_df[shots_df["outcome"].str.contains("Goal", case=False, na=False)]
+        on_target_df = shots_df[shots_df["outcome"].str.contains("Target", case=False, na=False) & ~shots_df["outcome"].str.contains("Goal", case=False, na=False)]
+        blocked_df = shots_df[shots_df["outcome"].str.contains("Blocked", case=False, na=False)]
+        off_target_df = shots_df[shots_df["outcome"].str.contains("Off", case=False, na=False)]
+        
+        # Draw Shot Trajectory Lines
+        for _, s_row in shots_df.iterrows():
+            is_goal = "Goal" in str(s_row.get("outcome", ""))
+            is_target = "Target" in str(s_row.get("outcome", "")) and not is_goal
+            line_color = '#ffd700' if is_goal else ('#2ed573' if is_target else '#ff4757')
+            line_width = 2.5 if is_goal else 1.5
+            pitch_shot.lines(
+                s_row["x"], s_row["y"], s_row["end_x"], s_row["end_y"],
+                ax=ax_shot,
+                color=line_color,
+                lw=line_width,
+                alpha=0.85 if is_goal else 0.45,
+                zorder=2
+            )
+            
+        # Draw Shot Outcome Markers
+        if not off_target_df.empty:
+            pitch_shot.scatter(
+                off_target_df["x"], off_target_df["y"],
+                ax=ax_shot,
+                s=110,
+                c='#ff4757',
+                marker='x',
+                linewidths=2.5,
+                label=f'Shot Off Target ({len(off_target_df)})',
+                zorder=3
+            )
+        if not blocked_df.empty:
+            pitch_shot.scatter(
+                blocked_df["x"], blocked_df["y"],
+                ax=ax_shot,
+                s=100,
+                c='#a855f7',
+                marker='s',
+                edgecolors='#ffffff',
+                linewidths=1.2,
+                label=f'Blocked Shot ({len(blocked_df)})',
+                zorder=3
+            )
+        if not on_target_df.empty:
+            pitch_shot.scatter(
+                on_target_df["x"], on_target_df["y"],
+                ax=ax_shot,
+                s=130,
+                c='#2ed573',
+                marker='o',
+                edgecolors='#ffffff',
+                linewidths=1.5,
+                label=f'Shot On Target / Saved ({len(on_target_df)})',
+                zorder=4
+            )
+        if not goals_df.empty:
+            pitch_shot.scatter(
+                goals_df["x"], goals_df["y"],
+                ax=ax_shot,
+                s=280,
+                c='#ffd700',
+                marker='*',
+                edgecolors='#e30613',
+                linewidths=2.0,
+                label=f'GOAL ⚽ ({len(goals_df)})',
+                zorder=5
+            )
+            for _, g_row in goals_df.iterrows():
+                p_name_short = str(g_row.get("player_name", "")).split(" ")[-1]
+                ax_shot.text(
+                    g_row["x"], g_row["y"] - 3.2,
+                    f"⚽ {p_name_short}",
+                    color='#ffd700',
+                    fontsize=10,
+                    fontweight='bold',
+                    ha='center',
+                    zorder=6
+                )
+            
+        ax_shot.set_title(
+            f"Beşiktaş JK - Match Shot Map ({len(goals_df)} Goals • {len(on_target_df) + len(goals_df)} On Target / {len(shots_df)} Total Shots)",
+            fontsize=14,
+            color='#ffffff',
+            fontweight='bold',
+            pad=12
+        )
+        ax_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=10)
+        
+        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
+        with p_col2:
+            st.pyplot(fig_shot, use_container_width=True)
+        plt.close(fig_shot)
     
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -665,7 +782,13 @@ else:
     total_actions = len(df_oyuncu)
     succ_act_c = "is_successful" if "is_successful" in df_oyuncu.columns else "basarili"
     successful_actions = int((df_oyuncu[succ_act_c] == True).sum()) if succ_act_c in df_oyuncu.columns else total_actions
-    shots_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Shot", case=False, na=False)])
+    
+    # Player Shots Subset
+    player_shots = df_oyuncu[df_oyuncu[act_c].str.contains("Shot", case=False, na=False)]
+    shots_count = len(player_shots)
+    goals_count = len(player_shots[player_shots["outcome"].str.contains("Goal", case=False, na=False)]) if not player_shots.empty else 0
+    on_target_shots = len(player_shots[player_shots["outcome"].str.contains("Target", case=False, na=False)]) if not player_shots.empty else 0
+    
     defensive_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Tackle|Interception", case=False, na=False)])
     chances_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Chance", case=False, na=False)])
     
@@ -691,23 +814,28 @@ else:
         )
     with kpi4:
         st.metric(
-            label="⚡ TOTAL ACTIONS",
-            value=f"{successful_actions}",
-            delta=f"{total_actions} Total Events"
+            label="⚽ SHOTS / GOALS",
+            value=f"{shots_count} Shots",
+            delta=f"⚽ {goals_count} Goal(s)" if goals_count > 0 else (f"{on_target_shots} On Target" if on_target_shots > 0 else "Attacking Attempts")
         )
     with kpi5:
         st.metric(
-            label="🛡️ DEFENSE / SHOTS",
-            value=f"{defensive_count} / {shots_count}",
-            delta=f"{chances_count} Key Chances" if chances_count > 0 else f"{shots_count} Shots"
+            label="🛡️ DEFENSE / CHANCES",
+            value=f"{defensive_count} / {chances_count}",
+            delta=f"{chances_count} Key Chances" if chances_count > 0 else f"{defensive_count} Recoveries"
         )
         
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Player Visualizations: Heatmap & Accurate Passing Map
+    # Player Visualizations: Heatmap, Passing Map, and Shot Map
     st.markdown(f"### 🏟️ #{jersey_no} {secilen} - Tactical Spatial Maps")
-    tab_p1, tab_p2 = st.tabs(["🔥 Spatial Activity & Touch Heatmap", "🎯 Accurate Passing Map & Vectors"])
+    tab_p1, tab_p2, tab_p3 = st.tabs([
+        "🔥 Spatial Activity & Touch Heatmap",
+        "🎯 Accurate Passing Map & Vectors",
+        "⚽ Individual Shot Map & Trajectories"
+    ])
     
+    # TAB P1: Heatmap
     with tab_p1:
         st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
         pitch_indiv = Pitch(
@@ -769,6 +897,7 @@ else:
             st.pyplot(fig_indiv, use_container_width=True)
         plt.close(fig_indiv)
 
+    # TAB P2: Passing Map
     with tab_p2:
         st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
         pitch_p_pass = Pitch(
@@ -786,7 +915,6 @@ else:
         p_comp = passes[passes[succ_p] == True]
         p_incomp = passes[passes[succ_p] == False]
         
-        # Incompleted passes (red arrows)
         if not p_incomp.empty and "end_x" in p_incomp.columns:
             pitch_p_pass.arrows(
                 p_incomp["x"], p_incomp["y"],
@@ -801,7 +929,6 @@ else:
                 zorder=2
             )
             
-        # Completed passes (bright emerald green arrows)
         if not p_comp.empty and "end_x" in p_comp.columns:
             pitch_p_pass.arrows(
                 p_comp["x"], p_comp["y"],
@@ -812,7 +939,7 @@ else:
                 headwidth=4.2,
                 headlength=4.2,
                 alpha=0.82,
-                label=f'Accurate / Completed ({len(p_comp)})',
+                label=f'Completed ({len(p_comp)})',
                 zorder=3
             )
             
@@ -829,6 +956,130 @@ else:
         with p_col2:
             st.pyplot(fig_p_pass, use_container_width=True)
         plt.close(fig_p_pass)
+
+    # TAB P3: Individual Shot Map
+    with tab_p3:
+        st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+        pitch_p_shot = Pitch(
+            pitch_type='statsbomb',
+            pitch_color='#0f3622',
+            line_color='#ffffff',
+            line_zorder=2,
+            linewidth=1.8,
+            goal_type='box'
+        )
+        fig_p_shot, ax_p_shot = pitch_p_shot.draw(figsize=(12, 7.5))
+        fig_p_shot.patch.set_facecolor('#09160f')
+        
+        if not player_shots.empty:
+            p_goals = player_shots[player_shots["outcome"].str.contains("Goal", case=False, na=False)]
+            p_on_target = player_shots[player_shots["outcome"].str.contains("Target", case=False, na=False) & ~player_shots["outcome"].str.contains("Goal", case=False, na=False)]
+            p_blocked = player_shots[player_shots["outcome"].str.contains("Blocked", case=False, na=False)]
+            p_off_target = player_shots[player_shots["outcome"].str.contains("Off", case=False, na=False)]
+            
+            # Shot Lines
+            for _, s_row in player_shots.iterrows():
+                is_g = "Goal" in str(s_row.get("outcome", ""))
+                is_ont = "Target" in str(s_row.get("outcome", "")) and not is_g
+                c_line = '#ffd700' if is_g else ('#2ed573' if is_ont else '#ff4757')
+                w_line = 3.0 if is_g else 1.8
+                pitch_p_shot.lines(
+                    s_row["x"], s_row["y"], s_row["end_x"], s_row["end_y"],
+                    ax=ax_p_shot,
+                    color=c_line,
+                    lw=w_line,
+                    alpha=0.9 if is_g else 0.55,
+                    zorder=2
+                )
+                
+            if not p_off_target.empty:
+                pitch_p_shot.scatter(
+                    p_off_target["x"], p_off_target["y"],
+                    ax=ax_p_shot,
+                    s=120,
+                    c='#ff4757',
+                    marker='x',
+                    linewidths=2.5,
+                    label=f'Off Target ({len(p_off_target)})',
+                    zorder=3
+                )
+            if not p_blocked.empty:
+                pitch_p_shot.scatter(
+                    p_blocked["x"], p_blocked["y"],
+                    ax=ax_p_shot,
+                    s=110,
+                    c='#a855f7',
+                    marker='s',
+                    edgecolors='#ffffff',
+                    linewidths=1.2,
+                    label=f'Blocked ({len(p_blocked)})',
+                    zorder=3
+                )
+            if not p_on_target.empty:
+                pitch_p_shot.scatter(
+                    p_on_target["x"], p_on_target["y"],
+                    ax=ax_p_shot,
+                    s=140,
+                    c='#2ed573',
+                    marker='o',
+                    edgecolors='#ffffff',
+                    linewidths=1.5,
+                    label=f'On Target / Saved ({len(p_on_target)})',
+                    zorder=4
+                )
+            if not p_goals.empty:
+                pitch_p_shot.scatter(
+                    p_goals["x"], p_goals["y"],
+                    ax=ax_p_shot,
+                    s=320,
+                    c='#ffd700',
+                    marker='*',
+                    edgecolors='#e30613',
+                    linewidths=2.0,
+                    label=f'GOAL ⚽ ({len(p_goals)})',
+                    zorder=5
+                )
+                for _, g_row in p_goals.iterrows():
+                    ax_p_shot.text(
+                        g_row["x"], g_row["y"] - 3.2,
+                        f"⚽ {g_row.get('outcome', 'Goal')}",
+                        color='#ffd700',
+                        fontsize=11,
+                        fontweight='bold',
+                        ha='center',
+                        zorder=6
+                    )
+                    
+            ax_p_shot.set_title(
+                f"#{jersey_no} {secilen} - Individual Shot Map ({goals_count} Goals • {shots_count} Total Shots)",
+                fontsize=14,
+                color='#ffffff',
+                fontweight='bold',
+                pad=12
+            )
+            ax_p_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=10)
+        else:
+            ax_p_shot.text(
+                60, 40,
+                f"No shot attempts recorded for #{jersey_no} {secilen} in this match.",
+                color='#94a3b8',
+                fontsize=13,
+                fontweight='bold',
+                ha='center',
+                va='center'
+            )
+            ax_p_shot.set_title(
+                f"#{jersey_no} {secilen} - Shot Map (0 Shots)",
+                fontsize=14,
+                color='#ffffff',
+                fontweight='bold',
+                pad=12
+            )
+            
+        p_col1, p_col2, p_col3 = st.columns([1, 10, 1])
+        with p_col2:
+            st.pyplot(fig_p_shot, use_container_width=True)
+        plt.close(fig_p_shot)
         
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -916,6 +1167,7 @@ else:
             "minutes_played": "Minutes Played",
             "action_type": "Action Type",
             "outcome": "Outcome",
+            "shot_detail": "Event Detail",
             "x": "Pitch Start X",
             "y": "Pitch Start Y",
             "end_x": "Pitch End X",
@@ -923,7 +1175,6 @@ else:
             "opta_points": "Opta Rating"
         }
         
-        # Ensure all columns exist before selecting
         for c in display_cols.keys():
             if c not in table_df.columns:
                 if c == "player_name":
@@ -938,6 +1189,8 @@ else:
                     table_df["action_type"] = table_df["aksiyon_turu"]
                 elif c == "outcome" and "basarili" in table_df.columns:
                     table_df["outcome"] = table_df["basarili"].apply(lambda x: "Completed" if x else "Incompleted")
+                elif c == "shot_detail":
+                    table_df["shot_detail"] = table_df["action_type"]
                 elif c == "end_x":
                     table_df["end_x"] = table_df["x"] + 10
                 elif c == "end_y":
