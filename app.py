@@ -1208,4 +1208,9 @@ else:
         )
 
 st.markdown("---")
-st.caption("⚽ 2026 Beşiktaş JK Matchday Intelligence • Powered by Streamlit & mplsoccer")
+st.markdown("""
+<div style="text-align: center; color: #64748b; font-size: 0.8rem; padding: 10px 0 20px 0; line-height: 1.6;">
+    ⚽ <strong>2026 Beşiktaş JK Matchday Performance Intelligence</strong> • Powered by <strong>Streamlit</strong> & <strong>mplsoccer</strong><br>
+    ⚖️ <em>Disclaimer: This application is strictly developed for educational, research, and non-commercial portfolio demonstration purposes. All team names, crests, and trademarks belong to their respective owners.</em>
+</div>
+""", unsafe_allow_html=True)

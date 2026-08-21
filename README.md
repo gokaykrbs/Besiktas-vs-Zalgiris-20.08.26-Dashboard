@@ -70,6 +70,19 @@ Open your browser and navigate to `http://localhost:8501`.
 
 ---
 
+## ⚖️ Legal Disclaimer & Fair Use Notice
+
+> [!NOTE]  
+> **Educational & Portfolio Purpose:**  
+> This project is strictly developed as an **educational, research, and non-commercial data analytics portfolio project**. It demonstrates modern sports data engineering, web scraping/API interception techniques, spatial soccer analytics (`mplsoccer`), and interactive data visualization (`Streamlit` & `Plotly`).
+
+- **Intellectual Property & Trademarks:**  
+  All team names, club badges, crests, competition logos (e.g., *Beşiktaş JK*, *FK Kauno Žalgiris*, *UEFA Europa League*), and player identities are the intellectual property and registered trademarks of their respective owners and governing bodies. Their use in this repository falls under **Fair Use** principles for non-profit educational and portfolio review purposes.
+- **Data Attribution:**  
+  Match events, statistics, and ratings are utilized for analytical demonstration purposes referencing publicly accessible sports data feeds (Sofascore / Opta). No commercial rights are claimed over the underlying match data.
+
+---
+
 ## 📄 License
 
-MIT License © 2026 [gokaykrbs](https://github.com/gokaykrbs)
+This project is licensed under the [MIT License](LICENSE) © 2026 [gokaykrbs](https://github.com/gokaykrbs). Free for educational and learning purposes.
