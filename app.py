@@ -464,33 +464,39 @@ if df_all.empty:
 
 # Official Beşiktaş Matchday Squad with Exact Jersey Numbers
 STARTING_XI = [
-    {"name": "Alexander Nübel", "pos": "GK", "no": 1},
-    {"name": "Amir Murillo", "pos": "DF", "no": 62},
-    {"name": "Tiago Djaló", "pos": "DF", "no": 35},
-    {"name": "Emirhan Topçu", "pos": "DF", "no": 53},
-    {"name": "Rıdvan Yılmaz", "pos": "DF", "no": 33},
-    {"name": "Salih Özcan", "pos": "MF", "no": 6},
-    {"name": "Junior Olaitan", "pos": "MF", "no": 15},
-    {"name": "Orkun Kökçü", "pos": "MF", "no": 10},
-    {"name": "Václav Černý", "pos": "MF", "no": 18},
-    {"name": "Leandro Trossard", "pos": "FW", "no": 19},
-    {"name": "Hyeon-gyu Oh", "pos": "FW", "no": 9}
+    {"name": "Alexander Nübel", "pos": "GK", "no": 1, "minutes": 90, "sub_info": "Starter (Full 90')"},
+    {"name": "Amir Murillo", "pos": "DF", "no": 62, "minutes": 90, "sub_info": "Starter (Full 90') ⚽ (12')"},
+    {"name": "Tiago Djaló", "pos": "DF", "no": 35, "minutes": 90, "sub_info": "Starter (Full 90')"},
+    {"name": "Emirhan Topçu", "pos": "DF", "no": 53, "minutes": 90, "sub_info": "Starter (Full 90') ⭐ (9.54)"},
+    {"name": "Rıdvan Yılmaz", "pos": "DF", "no": 33, "minutes": 81, "sub_info": "Starter (Sub off 82') 🅰️🅰️ (2 Ast)"},
+    {"name": "Salih Özcan", "pos": "MF", "no": 6, "minutes": 90, "sub_info": "Starter (Full 90')"},
+    {"name": "Junior Olaitan", "pos": "MF", "no": 15, "minutes": 60, "sub_info": "Starter (Sub off 61')"},
+    {"name": "Orkun Kökçü", "pos": "MF", "no": 10, "minutes": 90, "sub_info": "Starter (Full 90') ⚽ (60') 🌟 MVP"},
+    {"name": "Václav Černý", "pos": "MF", "no": 18, "minutes": 45, "sub_info": "Starter (Sub off 46')"},
+    {"name": "Leandro Trossard", "pos": "FW", "no": 19, "minutes": 72, "sub_info": "Starter (Sub off 73')"},
+    {"name": "Hyeon-gyu Oh", "pos": "FW", "no": 9, "minutes": 60, "sub_info": "Starter (Sub off 61') ⚽ (6')"}
 ]
 
-SUBSTITUTES = [
-    {"name": "İlhan Fakılı", "pos": "MF", "no": 29},
-    {"name": "Amir Hadžiahmetović", "pos": "MF", "no": 5},
-    {"name": "Dušan Vlahović", "pos": "FW", "no": 24},
-    {"name": "Milot Rashica", "pos": "FW", "no": 7},
-    {"name": "Kassoum Ouattara", "pos": "DF", "no": 11},
-    {"name": "Doğan Alemdar", "pos": "GK", "no": 80},
-    {"name": "Emmanuel Agbadou", "pos": "DF", "no": 12},
-    {"name": "Taylan Bulut", "pos": "DF", "no": 22},
-    {"name": "Yasin Özcan", "pos": "DF", "no": 58},
-    {"name": "Wilfred Ndidi", "pos": "MF", "no": 4},
-    {"name": "Kartal Kayra Yılmaz", "pos": "MF", "no": 8},
-    {"name": "Semih Kılıçsoy", "pos": "FW", "no": 90}
+SUBSTITUTES_PLAYED = [
+    {"name": "İlhan Fakılı", "pos": "MF", "no": 29, "minutes": 45, "sub_info": "Sub (46' in)"},
+    {"name": "Amir Hadžiahmetović", "pos": "MF", "no": 5, "minutes": 30, "sub_info": "Sub (61' in)"},
+    {"name": "Dušan Vlahović", "pos": "FW", "no": 24, "minutes": 30, "sub_info": "Sub (61' in)"},
+    {"name": "Milot Rashica", "pos": "FW", "no": 7, "minutes": 18, "sub_info": "Sub (73' in)"},
+    {"name": "Kassoum Ouattara", "pos": "DF", "no": 11, "minutes": 9, "sub_info": "Sub (82' in)"}
 ]
+
+SUBSTITUTES_UNUSED = [
+    {"name": "Doğan Alemdar", "pos": "GK", "no": 80, "minutes": 0, "sub_info": "Unused Sub (0')"},
+    {"name": "Emmanuel Agbadou", "pos": "DF", "no": 12, "minutes": 0, "sub_info": "Unused Sub (0')"},
+    {"name": "Taylan Bulut", "pos": "DF", "no": 22, "minutes": 0, "sub_info": "Unused Sub (0')"},
+    {"name": "Yasin Özcan", "pos": "DF", "no": 58, "minutes": 0, "sub_info": "Unused Sub (0')"},
+    {"name": "Wilfred Ndidi", "pos": "MF", "no": 4, "minutes": 0, "sub_info": "Unused Sub (0')"},
+    {"name": "Kartal Kayra Yılmaz", "pos": "MF", "no": 8, "minutes": 0, "sub_info": "Unused Sub (0')"},
+    {"name": "Semih Kılıçsoy", "pos": "FW", "no": 90, "minutes": 0, "sub_info": "Unused Sub (0')"}
+]
+
+SUBSTITUTES = SUBSTITUTES_PLAYED + SUBSTITUTES_UNUSED
+ALL_SQUAD = STARTING_XI + SUBSTITUTES
 
 
 # ==============================================================================
@@ -525,18 +531,36 @@ with st.sidebar:
 
     st.markdown("---")
     
-    # Substitutes
-    st.markdown("<div class='sidebar-heading'>🔄 SUBSTITUTES</div>", unsafe_allow_html=True)
-    for player in SUBSTITUTES:
+    # Substitutes who played
+    st.markdown("<div class='sidebar-heading'>🔄 SUBSTITUTES (SUBBED IN)</div>", unsafe_allow_html=True)
+    for player in SUBSTITUTES_PLAYED:
+        p_name = player["name"]
+        p_no = player["no"]
+        p_pos = player["pos"]
+        p_min = player["minutes"]
+        
+        btn_label = f"#{p_no} {p_name} ({p_pos} • {p_min}')"
+        if st.session_state.secilen_oyuncu == p_name:
+            btn_label = f"🔥 🔴 #{p_no} {p_name}"
+            
+        if st.button(btn_label, key=f"btn_sub_in_{p_name}", use_container_width=True):
+            st.session_state.secilen_oyuncu = p_name
+            st.rerun()
+
+    st.markdown("---")
+    
+    # Unused Substitutes (Bench)
+    st.markdown("<div class='sidebar-heading'>🪑 UNUSED SUBS (BENCH)</div>", unsafe_allow_html=True)
+    for player in SUBSTITUTES_UNUSED:
         p_name = player["name"]
         p_no = player["no"]
         p_pos = player["pos"]
         
-        btn_label = f"#{p_no} {p_name} ({p_pos})"
+        btn_label = f"#{p_no} {p_name} ({p_pos} • 0')"
         if st.session_state.secilen_oyuncu == p_name:
-            btn_label = f"🔥 🔴 #{p_no} {p_name}"
+            btn_label = f"⚪ #{p_no} {p_name} (0')"
             
-        if st.button(btn_label, key=f"btn_sub_{p_name}", use_container_width=True):
+        if st.button(btn_label, key=f"btn_sub_un_{p_name}", use_container_width=True):
             st.session_state.secilen_oyuncu = p_name
             st.rerun()
 
@@ -864,10 +888,14 @@ if st.session_state.secilen_oyuncu is None:
             {"Min": "61'", "Key Moment": "🔄 Tactical Sub: Hyeon-gyu Oh ➡️ Dušan Vlahović", "Score": "3 - 0"},
             {"Min": "61'", "Key Moment": "🔄 Tactical Sub: Junior Olaitan ➡️ Amir Hadžiahmetović", "Score": "3 - 0"},
             {"Min": "73'", "Key Moment": "🔄 Tactical Sub: Leandro Trossard ➡️ Milot Rashica", "Score": "3 - 0"},
-            {"Min": "82'", "Key Moment": "🔄 Tactical Sub: Rıdvan Yılmaz ➡️ Kassoum Ouattara", "Score": "3 - 0"},
-            {"Min": "90'", "Key Moment": "🏁 FULL TIME: Dominant 3-0 Victory", "Score": "3 - 0"}
+            {"Min": "82'", "Key Moment": "?? Tactical Sub: R?dvan Y?lmaz ?? Kassoum Ouattara", "Score": "3 - 0"},
+            {"Min": "90'", "Key Moment": "?? FULL TIME: Dominant 3-0 Victory", "Score": "3 - 0"}
         ])
-        st.dataframe(incidents_data, use_container_width=True, hide_index=True)
+        st.dataframe(
+            incidents_data,
+            use_container_width=True,
+            hide_index=True
+        )
 
 
 # ------------------------------------------------------------------------------
@@ -884,102 +912,179 @@ else:
     if df_oyuncu.empty and "player_name" in df_all.columns:
         df_oyuncu = df_all[df_all["player_name"] == secilen].copy()
     
-    pos = df_oyuncu["position"].iloc[0] if "position" in df_oyuncu.columns else (df_oyuncu["mevki"].iloc[0] if not df_oyuncu.empty else "MF")
-    opta_pts = float(df_oyuncu["opta_points"].iloc[0]) if "opta_points" in df_oyuncu.columns and not df_oyuncu.empty else 6.00
-    jersey_no = df_oyuncu["jersey_number"].iloc[0] if "jersey_number" in df_oyuncu.columns else (df_oyuncu["forma_no"].iloc[0] if "forma_no" in df_oyuncu.columns and not df_oyuncu.empty else "")
-    mins_played = int(df_oyuncu["minutes_played"].iloc[0]) if "minutes_played" in df_oyuncu.columns and not df_oyuncu.empty else 90
-    sub_status = df_oyuncu["sub_info"].iloc[0] if "sub_info" in df_oyuncu.columns and not df_oyuncu.empty else ("Starter" if mins_played >= 60 else f"Sub ({mins_played}' played)")
+    # Find metadata in ALL_SQUAD
+    roster_info = next((p for p in ALL_SQUAD if p["name"] == secilen), {})
+    pos = roster_info.get("pos", df_oyuncu["position"].iloc[0] if ("position" in df_oyuncu.columns and not df_oyuncu.empty) else "MF")
+    jersey_no = roster_info.get("no", df_oyuncu["jersey_number"].iloc[0] if ("jersey_number" in df_oyuncu.columns and not df_oyuncu.empty) else "")
     
-    # Player Spotlight Scoreboard Box
-    st.markdown(f"""
-    <div class="scoreboard-box">
-        <div class="league-badge">⭐ Player Spotlight • Match Performance</div>
-        <div class="scoreboard-grid">
-            <div class="team-col-left">
-                <div class="team-title-text">#{jersey_no} {secilen.upper()}</div>
-                <div class="team-scorers">Position: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>{mins_played} Minutes Played</strong> ({sub_status})</div>
-            </div>
-            <div>
-                <div class="score-center-badge" style="border-color: #2ed573; box-shadow: 0 0 25px rgba(46, 213, 115, 0.45);">
-                    {opta_pts:.2f} <span style="font-size: 1rem; color: #7bed9f;">PTS</span>
+    # Check minutes played
+    if "minutes" in roster_info:
+        mins_played = int(roster_info["minutes"])
+    elif "minutes_played" in df_oyuncu.columns and not df_oyuncu.empty and pd.notna(df_oyuncu["minutes_played"].iloc[0]):
+        mins_played = int(df_oyuncu["minutes_played"].iloc[0])
+    else:
+        mins_played = 0
+
+    sub_status = roster_info.get("sub_info", df_oyuncu["sub_info"].iloc[0] if ("sub_info" in df_oyuncu.columns and not df_oyuncu.empty) else ("Unused Sub (0')" if mins_played == 0 else f"Sub ({mins_played}' played)"))
+    
+    # Filter active on-pitch actions (exclude 'Did Not Play' or NaN coordinates)
+    act_c = "action_type" if "action_type" in df_oyuncu.columns else "aksiyon_turu"
+    df_active_actions = df_oyuncu[~df_oyuncu[act_c].isin(["Did Not Play", "none", "None", np.nan]) & df_oyuncu['x'].notna()] if not df_oyuncu.empty else pd.DataFrame()
+    
+    has_played = (mins_played > 0) and (not df_active_actions.empty)
+
+    # Opta Points calculation
+    if has_played and "opta_points" in df_oyuncu.columns and not df_oyuncu.empty and pd.notna(df_oyuncu["opta_points"].iloc[0]):
+        opta_pts = float(df_oyuncu["opta_points"].iloc[0])
+    else:
+        opta_pts = None
+
+    # 1. Player Spotlight Scoreboard Box
+    if has_played:
+        st.markdown(f"""
+        <div class="scoreboard-box">
+            <div class="league-badge">⭐ Player Spotlight • Match Performance</div>
+            <div class="scoreboard-grid">
+                <div class="team-col-left">
+                    <div class="team-title-text">#{jersey_no} {secilen.upper()}</div>
+                    <div class="team-scorers">Position: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>{mins_played} Minutes Played</strong> ({sub_status})</div>
+                </div>
+                <div>
+                    <div class="score-center-badge" style="border-color: #2ed573; box-shadow: 0 0 25px rgba(46, 213, 115, 0.45);">
+                        {opta_pts:.2f} <span style="font-size: 1rem; color: #7bed9f;">PTS</span>
+                    </div>
+                </div>
+                <div class="team-col-right">
+                    <div class="team-title-text" style="color: #cbd5e1;">🦅 BEŞİKTAŞ JK</div>
+                    <div class="team-scorers" style="color: #94a3b8;">Match Duration: <strong>{mins_played}'</strong></div>
                 </div>
             </div>
-            <div class="team-col-right">
-                <div class="team-title-text" style="color: #cbd5e1;">🦅 BEŞİKTAŞ JK</div>
-                <div class="team-scorers" style="color: #94a3b8;">Match Duration: <strong>{mins_played}'</strong></div>
+            <div class="match-venue-footer">
+                <span>🏟️ <strong>Tüpraş Stadium</strong>, Istanbul</span>
+                <span>⏱️ Match Duration: <strong>{mins_played} Minutes</strong></span>
+                <span>🏆 UEFA Europa League (Beşiktaş 3 - 0 Zalgiris)</span>
             </div>
         </div>
-        <div class="match-venue-footer">
-            <span>🏟️ <strong>Tüpraş Stadium</strong>, Istanbul</span>
-            <span>⏱️ Match Duration: <strong>{mins_played} Minutes</strong></span>
-            <span>🏆 UEFA Europa League (Beşiktaş 3 - 0 Zalgiris)</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Player Metrics Calculations
-    act_c = "action_type" if "action_type" in df_oyuncu.columns else "aksiyon_turu"
-    passes = df_oyuncu[df_oyuncu[act_c].str.contains("Pass", case=False, na=False)]
-    total_passes = len(passes)
-    
-    succ_c = "is_successful" if "is_successful" in passes.columns else ("basarili" if "basarili" in passes.columns else "basarili_pas")
-    if succ_c in passes.columns:
-        accurate_passes = int((passes[succ_c] == True).sum() if passes[succ_c].dtype == bool else (passes[succ_c] == 1).sum())
+        """, unsafe_allow_html=True)
     else:
-        accurate_passes = int(total_passes * 0.89)
+        st.markdown(f"""
+        <div class="scoreboard-box">
+            <div class="league-badge" style="background: linear-gradient(90deg, #475569, #64748b); box-shadow: 0 0 14px rgba(100, 116, 139, 0.4);">🪑 Unused Substitute • Match Roster</div>
+            <div class="scoreboard-grid">
+                <div class="team-col-left">
+                    <div class="team-title-text">#{jersey_no} {secilen.upper()}</div>
+                    <div class="team-scorers" style="color: #cbd5e1;">Position: <strong>{pos}</strong> &nbsp;•&nbsp; ⏱️ <strong>0 Minutes Played (Did Not Play)</strong></div>
+                </div>
+                <div>
+                    <div class="score-center-badge" style="border-color: #64748b; box-shadow: 0 0 20px rgba(100, 116, 139, 0.25); color: #94a3b8; font-size: 2.1rem;">
+                        — <span style="font-size: 0.85rem; color: #64748b;">N/A</span>
+                    </div>
+                </div>
+                <div class="team-col-right">
+                    <div class="team-title-text" style="color: #cbd5e1;">🦅 BEŞİKTAŞ JK</div>
+                    <div class="team-scorers" style="color: #64748b;">Match Status: <strong>Bench / Yedek</strong></div>
+                </div>
+            </div>
+            <div class="match-venue-footer">
+                <span>🏟️ <strong>Tüpraş Stadium</strong>, Istanbul</span>
+                <span>⏱️ Played: <strong>0 Minutes (Süre Almadı)</strong></span>
+                <span>🏆 UEFA Europa League (Beşiktaş 3 - 0 Zalgiris)</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # 2. Player Metrics Calculations
+    if has_played:
+        passes = df_active_actions[df_active_actions[act_c].str.contains("Pass", case=False, na=False)]
+        total_passes = len(passes)
         
-    inaccurate_passes = max(0, total_passes - accurate_passes)
-    pass_acc = (accurate_passes / total_passes * 100) if total_passes > 0 else 0.0
-    
-    total_actions = len(df_oyuncu)
-    succ_act_c = "is_successful" if "is_successful" in df_oyuncu.columns else "basarili"
-    successful_actions = int((df_oyuncu[succ_act_c] == True).sum()) if succ_act_c in df_oyuncu.columns else total_actions
-    
-    # Player Shots Subset
-    player_shots = df_oyuncu[df_oyuncu[act_c].str.contains("Shot", case=False, na=False)]
-    shots_count = len(player_shots)
-    goals_count = len(player_shots[player_shots["outcome"].str.contains("Goal", case=False, na=False)]) if not player_shots.empty else 0
-    on_target_shots = len(player_shots[player_shots["outcome"].str.contains("Target", case=False, na=False)]) if not player_shots.empty else 0
-    
-    defensive_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Tackle|Interception", case=False, na=False)])
-    chances_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Chance", case=False, na=False)])
-    
-    # Individual KPI Cards (5 Columns with Minutes Played)
-    kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
-    with kpi1:
-        st.metric(
-            label="⭐ OPTA RATING",
-            value=f"{opta_pts:.2f}",
-            delta="🌟 MVP" if opta_pts >= 9.5 else ("🔥 Masterclass" if opta_pts >= 8.0 else "Solid")
-        )
-    with kpi2:
-        st.metric(
-            label="⏱️ MINUTES PLAYED",
-            value=f"{mins_played}'",
-            delta=sub_status
-        )
-    with kpi3:
-        st.metric(
-            label="🎯 PASS ACCURACY",
-            value=f"{accurate_passes} / {total_passes}",
-            delta=f"{pass_acc:.1f}% Precision" if total_passes > 0 else "No Passes"
-        )
-    with kpi4:
-        st.metric(
-            label="⚽ SHOTS / GOALS",
-            value=f"{shots_count} Shots",
-            delta=f"⚽ {goals_count} Goal(s)" if goals_count > 0 else (f"{on_target_shots} On Target" if on_target_shots > 0 else "Attacking Attempts")
-        )
-    with kpi5:
-        st.metric(
-            label="🛡️ DEFENSE / CHANCES",
-            value=f"{defensive_count} / {chances_count}",
-            delta=f"{chances_count} Key Chances" if chances_count > 0 else f"{defensive_count} Recoveries"
-        )
+        succ_c = "is_successful" if "is_successful" in passes.columns else ("basarili" if "basarili" in passes.columns else "basarili_pas")
+        if succ_c in passes.columns:
+            accurate_passes = int((passes[succ_c] == True).sum() if passes[succ_c].dtype == bool else (passes[succ_c] == 1).sum())
+        else:
+            accurate_passes = int(total_passes * 0.89)
+            
+        inaccurate_passes = max(0, total_passes - accurate_passes)
+        pass_acc = (accurate_passes / total_passes * 100) if total_passes > 0 else 0.0
         
+        total_actions = len(df_active_actions)
+        player_shots = df_active_actions[df_active_actions[act_c].str.contains("Shot", case=False, na=False)]
+        shots_count = len(player_shots)
+        goals_count = len(player_shots[player_shots["outcome"].str.contains("Goal", case=False, na=False)]) if not player_shots.empty else 0
+        on_target_shots = len(player_shots[player_shots["outcome"].str.contains("Target", case=False, na=False)]) if not player_shots.empty else 0
+        
+        defensive_count = len(df_active_actions[df_active_actions[act_c].str.contains("Tackle|Interception", case=False, na=False)])
+        chances_count = len(df_active_actions[df_active_actions[act_c].str.contains("Chance", case=False, na=False)])
+
+        # Individual KPI Cards (Played)
+        kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+        with kpi1:
+            st.metric(
+                label="⭐ OPTA RATING",
+                value=f"{opta_pts:.2f}" if opta_pts is not None else "—",
+                delta="🌟 MVP" if (opta_pts and opta_pts >= 9.5) else ("🔥 Masterclass" if (opta_pts and opta_pts >= 8.0) else "Solid")
+            )
+        with kpi2:
+            st.metric(
+                label="⏱️ MINUTES PLAYED",
+                value=f"{mins_played}'",
+                delta=sub_status
+            )
+        with kpi3:
+            st.metric(
+                label="🎯 PASS ACCURACY",
+                value=f"{accurate_passes} / {total_passes}",
+                delta=f"{pass_acc:.1f}% Precision" if total_passes > 0 else "No Passes"
+            )
+        with kpi4:
+            st.metric(
+                label="⚽ SHOTS / GOALS",
+                value=f"{shots_count} Shots",
+                delta=f"⚽ {goals_count} Goal(s)" if goals_count > 0 else (f"{on_target_shots} On Target" if on_target_shots > 0 else "Attacking Attempts")
+            )
+        with kpi5:
+            st.metric(
+                label="🛡️ DEFENSE / CHANCES",
+                value=f"{defensive_count} / {chances_count}",
+                delta=f"{chances_count} Key Chances" if chances_count > 0 else f"{defensive_count} Recoveries"
+            )
+    else:
+        # Individual KPI Cards (Unused Sub)
+        kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
+        with kpi1:
+            st.metric(
+                label="⭐ OPTA RATING",
+                value="—",
+                delta="No Rating"
+            )
+        with kpi2:
+            st.metric(
+                label="⏱️ MINUTES PLAYED",
+                value="0'",
+                delta="Unused Substitute"
+            )
+        with kpi3:
+            st.metric(
+                label="🎯 PASS ACCURACY",
+                value="—",
+                delta="No Match Passes"
+            )
+        with kpi4:
+            st.metric(
+                label="⚽ SHOTS / GOALS",
+                value="0",
+                delta="No Attempts"
+            )
+        with kpi5:
+            st.metric(
+                label="🛡️ DEFENSE / CHANCES",
+                value="0 / 0",
+                delta="No Actions"
+            )
+
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Player Visualizations: Heatmap, Passing Map, and Shot Map
+    # 3. Player Visualizations: Heatmap, Passing Map, and Shot Map
     st.markdown(f"### 🏟️ #{jersey_no} {secilen} - Tactical Spatial Maps")
     tab_p1, tab_p2, tab_p3 = st.tabs([
         "🔥 Spatial Activity & Touch Heatmap",
@@ -987,290 +1092,356 @@ else:
         "⚽ Individual Shot Map & Trajectories"
     ])
     
-    # TAB P1: Heatmap
-    with tab_p1:
-        st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
-        pitch_indiv = Pitch(
-            pitch_type='statsbomb',
-            pitch_color='#0f3622',
-            line_color='#ffffff',
-            line_zorder=2,
-            linewidth=1.8,
-            goal_type='box'
-        )
-        fig_indiv, ax_indiv = pitch_indiv.draw(figsize=(10, 6.5))
-        fig_indiv.patch.set_facecolor('#09160f')
-        
-        px_coords = df_oyuncu['x'].dropna()
-        py_coords = df_oyuncu['y'].dropna()
-        
-        if len(px_coords) >= 4:
-            sns.kdeplot(
-                x=px_coords,
-                y=py_coords,
-                ax=ax_indiv,
-                fill=True,
-                cmap='YlOrRd',
-                levels=65,
-                thresh=0.04,
-                alpha=0.75,
-                zorder=1
+    if has_played:
+        # TAB P1: Heatmap
+        with tab_p1:
+            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+            pitch_indiv = Pitch(
+                pitch_type='statsbomb',
+                pitch_color='#0f3622',
+                line_color='#ffffff',
+                line_zorder=2,
+                linewidth=1.8,
+                goal_type='box'
             )
-            pitch_indiv.scatter(
-                px_coords, py_coords,
-                ax=ax_indiv,
-                s=55,
-                c='#ffffff',
-                edgecolors='#e30613',
-                alpha=0.8,
-                zorder=3,
-                label='Action Point'
-            )
-        else:
-            pitch_indiv.scatter(
-                px_coords, py_coords,
-                ax=ax_indiv,
-                s=95,
-                c='#ff4757',
-                edgecolors='#ffffff',
-                alpha=0.9,
-                zorder=3
-            )
+            fig_indiv, ax_indiv = pitch_indiv.draw(figsize=(10, 6.5))
+            fig_indiv.patch.set_facecolor('#09160f')
             
-        ax_indiv.set_title(
-            f"#{jersey_no} {secilen} ({pos}) - Ball Contact Heatmap & Influence Zones ({mins_played}' Played)",
-            fontsize=13,
-            color='#ffffff',
-            fontweight='bold',
-            pad=10
-        )
-        fig_indiv.tight_layout()
-        st.pyplot(fig_indiv, use_container_width=True)
-        plt.close(fig_indiv)
+            px_coords = df_active_actions['x'].dropna()
+            py_coords = df_active_actions['y'].dropna()
+            
+            if len(px_coords) >= 4:
+                sns.kdeplot(
+                    x=px_coords,
+                    y=py_coords,
+                    ax=ax_indiv,
+                    fill=True,
+                    cmap='YlOrRd',
+                    levels=65,
+                    thresh=0.04,
+                    alpha=0.75,
+                    zorder=1
+                )
+                pitch_indiv.scatter(
+                    px_coords, py_coords,
+                    ax=ax_indiv,
+                    s=55,
+                    c='#ffffff',
+                    edgecolors='#e30613',
+                    alpha=0.8,
+                    zorder=3,
+                    label='Action Point'
+                )
+            else:
+                pitch_indiv.scatter(
+                    px_coords, py_coords,
+                    ax=ax_indiv,
+                    s=95,
+                    c='#ff4757',
+                    edgecolors='#ffffff',
+                    alpha=0.9,
+                    zorder=3
+                )
+                
+            ax_indiv.set_title(
+                f"#{jersey_no} {secilen} ({pos}) - Ball Contact Heatmap & Influence Zones ({mins_played}' Played)",
+                fontsize=13,
+                color='#ffffff',
+                fontweight='bold',
+                pad=10
+            )
+            fig_indiv.tight_layout()
+            st.pyplot(fig_indiv, use_container_width=True)
+            plt.close(fig_indiv)
 
-    # TAB P2: Passing Map
-    with tab_p2:
-        st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
-        pitch_p_pass = Pitch(
-            pitch_type='statsbomb',
-            pitch_color='#0f3622',
-            line_color='#ffffff',
-            line_zorder=2,
-            linewidth=1.8,
-            goal_type='box'
-        )
-        fig_p_pass, ax_p_pass = pitch_p_pass.draw(figsize=(10, 6.5))
-        fig_p_pass.patch.set_facecolor('#09160f')
-        
-        succ_p = "is_successful" if "is_successful" in passes.columns else "basarili"
-        p_comp = passes[passes[succ_p] == True]
-        p_incomp = passes[passes[succ_p] == False]
-        
-        if not p_incomp.empty and "end_x" in p_incomp.columns:
-            pitch_p_pass.arrows(
-                p_incomp["x"], p_incomp["y"],
-                p_incomp["end_x"], p_incomp["end_y"],
-                ax=ax_p_pass,
-                color='#ff4757',
-                width=1.6,
-                headwidth=3.8,
-                headlength=3.8,
-                alpha=0.45,
-                label=f'Incompleted ({len(p_incomp)})',
-                zorder=2
+        # TAB P2: Passing Map
+        with tab_p2:
+            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+            pitch_p_pass = Pitch(
+                pitch_type='statsbomb',
+                pitch_color='#0f3622',
+                line_color='#ffffff',
+                line_zorder=2,
+                linewidth=1.8,
+                goal_type='box'
             )
+            fig_p_pass, ax_p_pass = pitch_p_pass.draw(figsize=(10, 6.5))
+            fig_p_pass.patch.set_facecolor('#09160f')
             
-        if not p_comp.empty and "end_x" in p_comp.columns:
-            pitch_p_pass.arrows(
-                p_comp["x"], p_comp["y"],
-                p_comp["end_x"], p_comp["end_y"],
-                ax=ax_p_pass,
-                color='#2ed573',
-                width=2.2,
-                headwidth=4.2,
-                headlength=4.2,
-                alpha=0.82,
-                label=f'Completed ({len(p_comp)})',
-                zorder=3
-            )
+            succ_p = "is_successful" if "is_successful" in passes.columns else "basarili"
+            p_comp = passes[passes[succ_p] == True]
+            p_incomp = passes[passes[succ_p] == False]
             
-        ax_p_pass.set_title(
-            f"#{jersey_no} {secilen} - Accurate Passing Map ({accurate_passes} Completed / {total_passes} Total • {pass_acc:.1f}% Accuracy)",
-            fontsize=13,
-            color='#ffffff',
-            fontweight='bold',
-            pad=10
-        )
-        ax_p_pass.legend(facecolor='#0d1e15', edgecolor='#2ed573', labelcolor='white', loc='upper left', fontsize=9)
-        fig_p_pass.tight_layout()
-        st.pyplot(fig_p_pass, use_container_width=True)
-        plt.close(fig_p_pass)
-
-    # TAB P3: Individual Shot Map
-    with tab_p3:
-        st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
-        pitch_p_shot = Pitch(
-            pitch_type='statsbomb',
-            pitch_color='#0f3622',
-            line_color='#ffffff',
-            line_zorder=2,
-            linewidth=1.8,
-            goal_type='box'
-        )
-        fig_p_shot, ax_p_shot = pitch_p_shot.draw(figsize=(10, 6.5))
-        fig_p_shot.patch.set_facecolor('#09160f')
-        
-        if not player_shots.empty:
-            p_goals = player_shots[player_shots["outcome"].str.contains("Goal", case=False, na=False)]
-            p_on_target = player_shots[player_shots["outcome"].str.contains("Target", case=False, na=False) & ~player_shots["outcome"].str.contains("Goal", case=False, na=False)]
-            p_blocked = player_shots[player_shots["outcome"].str.contains("Blocked", case=False, na=False)]
-            p_off_target = player_shots[player_shots["outcome"].str.contains("Off", case=False, na=False)]
-            
-            # Shot Lines
-            for _, s_row in player_shots.iterrows():
-                is_g = "Goal" in str(s_row.get("outcome", ""))
-                is_ont = "Target" in str(s_row.get("outcome", "")) and not is_g
-                c_line = '#ffd700' if is_g else ('#2ed573' if is_ont else '#ff4757')
-                w_line = 3.0 if is_g else 1.8
-                pitch_p_shot.lines(
-                    s_row["x"], s_row["y"], s_row["end_x"], s_row["end_y"],
-                    ax=ax_p_shot,
-                    color=c_line,
-                    lw=w_line,
-                    alpha=0.9 if is_g else 0.55,
+            if not p_incomp.empty and "end_x" in p_incomp.columns:
+                pitch_p_pass.arrows(
+                    p_incomp["x"], p_incomp["y"],
+                    p_incomp["end_x"], p_incomp["end_y"],
+                    ax=ax_p_pass,
+                    color='#ff4757',
+                    width=1.6,
+                    headwidth=3.8,
+                    headlength=3.8,
+                    alpha=0.45,
+                    label=f'Incompleted ({len(p_incomp)})',
                     zorder=2
                 )
                 
-            if not p_off_target.empty:
-                pitch_p_shot.scatter(
-                    p_off_target["x"], p_off_target["y"],
-                    ax=ax_p_shot,
-                    s=110,
-                    c='#ff4757',
-                    marker='x',
-                    linewidths=2.2,
-                    label=f'Off Target ({len(p_off_target)})',
+            if not p_comp.empty and "end_x" in p_comp.columns:
+                pitch_p_pass.arrows(
+                    p_comp["x"], p_comp["y"],
+                    p_comp["end_x"], p_comp["end_y"],
+                    ax=ax_p_pass,
+                    color='#2ed573',
+                    width=2.2,
+                    headwidth=4.2,
+                    headlength=4.2,
+                    alpha=0.82,
+                    label=f'Completed ({len(p_comp)})',
                     zorder=3
                 )
-            if not p_blocked.empty:
-                pitch_p_shot.scatter(
-                    p_blocked["x"], p_blocked["y"],
-                    ax=ax_p_shot,
-                    s=100,
-                    c='#a855f7',
-                    marker='s',
-                    edgecolors='#ffffff',
-                    linewidths=1.2,
-                    label=f'Blocked ({len(p_blocked)})',
-                    zorder=3
-            )
-            if not p_on_target.empty:
-                pitch_p_shot.scatter(
-                    p_on_target["x"], p_on_target["y"],
-                    ax=ax_p_shot,
-                    s=120,
-                    c='#2ed573',
-                    marker='o',
-                    edgecolors='#ffffff',
-                    linewidths=1.5,
-                    label=f'On Target / Saved ({len(p_on_target)})',
-                    zorder=4
-                )
-            if not p_goals.empty:
-                pitch_p_shot.scatter(
-                    p_goals["x"], p_goals["y"],
-                    ax=ax_p_shot,
-                    s=280,
-                    c='#ffd700',
-                    marker='*',
-                    edgecolors='#e30613',
-                    linewidths=2.0,
-                    label=f'GOAL ⚽ ({len(p_goals)})',
-                    zorder=5
-                )
-                for _, g_row in p_goals.iterrows():
-                    ax_p_shot.text(
-                        g_row["x"], g_row["y"] - 3.2,
-                        f"⚽ {g_row.get('outcome', 'Goal')}",
-                        color='#ffd700',
-                        fontsize=10,
-                        fontweight='bold',
-                        ha='center',
-                        zorder=6
-                    )
-                    
-            ax_p_shot.set_title(
-                f"#{jersey_no} {secilen} - Individual Shot Map ({goals_count} Goals • {shots_count} Total Shots)",
+                
+            ax_p_pass.set_title(
+                f"#{jersey_no} {secilen} - Accurate Passing Map ({accurate_passes} Completed / {total_passes} Total • {pass_acc:.1f}% Accuracy)",
                 fontsize=13,
                 color='#ffffff',
                 fontweight='bold',
                 pad=10
             )
-            ax_p_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=9)
-        else:
-            ax_p_shot.text(
+            ax_p_pass.legend(facecolor='#0d1e15', edgecolor='#2ed573', labelcolor='white', loc='upper left', fontsize=9)
+            fig_p_pass.tight_layout()
+            st.pyplot(fig_p_pass, use_container_width=True)
+            plt.close(fig_p_pass)
+
+        # TAB P3: Individual Shot Map
+        with tab_p3:
+            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+            pitch_p_shot = Pitch(
+                pitch_type='statsbomb',
+                pitch_color='#0f3622',
+                line_color='#ffffff',
+                line_zorder=2,
+                linewidth=1.8,
+                goal_type='box'
+            )
+            fig_p_shot, ax_p_shot = pitch_p_shot.draw(figsize=(10, 6.5))
+            fig_p_shot.patch.set_facecolor('#09160f')
+            
+            if not player_shots.empty:
+                p_goals = player_shots[player_shots["outcome"].str.contains("Goal", case=False, na=False)]
+                p_on_target = player_shots[player_shots["outcome"].str.contains("Target", case=False, na=False) & ~player_shots["outcome"].str.contains("Goal", case=False, na=False)]
+                p_blocked = player_shots[player_shots["outcome"].str.contains("Blocked", case=False, na=False)]
+                p_off_target = player_shots[player_shots["outcome"].str.contains("Off", case=False, na=False)]
+                
+                # Shot Lines
+                for _, s_row in player_shots.iterrows():
+                    is_g = "Goal" in str(s_row.get("outcome", ""))
+                    is_ont = "Target" in str(s_row.get("outcome", "")) and not is_g
+                    c_line = '#ffd700' if is_g else ('#2ed573' if is_ont else '#ff4757')
+                    w_line = 3.0 if is_g else 1.8
+                    pitch_p_shot.lines(
+                        s_row["x"], s_row["y"], s_row["end_x"], s_row["end_y"],
+                        ax=ax_p_shot,
+                        color=c_line,
+                        lw=w_line,
+                        alpha=0.9 if is_g else 0.55,
+                        zorder=2
+                    )
+                    
+                if not p_off_target.empty:
+                    pitch_p_shot.scatter(
+                        p_off_target["x"], p_off_target["y"],
+                        ax=ax_p_shot,
+                        s=110,
+                        c='#ff4757',
+                        marker='x',
+                        linewidths=2.2,
+                        label=f'Off Target ({len(p_off_target)})',
+                        zorder=3
+                    )
+                if not p_blocked.empty:
+                    pitch_p_shot.scatter(
+                        p_blocked["x"], p_blocked["y"],
+                        ax=ax_p_shot,
+                        s=100,
+                        c='#a855f7',
+                        marker='s',
+                        edgecolors='#ffffff',
+                        linewidths=1.2,
+                        label=f'Blocked ({len(p_blocked)})',
+                        zorder=3
+                    )
+                if not p_on_target.empty:
+                    pitch_p_shot.scatter(
+                        p_on_target["x"], p_on_target["y"],
+                        ax=ax_p_shot,
+                        s=120,
+                        c='#2ed573',
+                        marker='o',
+                        edgecolors='#ffffff',
+                        linewidths=1.5,
+                        label=f'On Target / Saved ({len(p_on_target)})',
+                        zorder=4
+                    )
+                if not p_goals.empty:
+                    pitch_p_shot.scatter(
+                        p_goals["x"], p_goals["y"],
+                        ax=ax_p_shot,
+                        s=280,
+                        c='#ffd700',
+                        marker='*',
+                        edgecolors='#e30613',
+                        linewidths=2.0,
+                        label=f'GOAL ⚽ ({len(p_goals)})',
+                        zorder=5
+                    )
+                    for _, g_row in p_goals.iterrows():
+                        ax_p_shot.text(
+                            g_row["x"], g_row["y"] - 3.2,
+                            f"⚽ {g_row.get('outcome', 'Goal')}",
+                            color='#ffd700',
+                            fontsize=10,
+                            fontweight='bold',
+                            ha='center',
+                            zorder=6
+                        )
+                        
+                ax_p_shot.set_title(
+                    f"#{jersey_no} {secilen} - Individual Shot Map ({goals_count} Goals • {shots_count} Total Shots)",
+                    fontsize=13,
+                    color='#ffffff',
+                    fontweight='bold',
+                    pad=10
+                )
+                ax_p_shot.legend(facecolor='#0d1e15', edgecolor='#ffd700', labelcolor='white', loc='upper left', fontsize=9)
+            else:
+                ax_p_shot.text(
+                    60, 40,
+                    f"No shot attempts recorded for #{jersey_no} {secilen} in this match.",
+                    color='#94a3b8',
+                    fontsize=12,
+                    fontweight='bold',
+                    ha='center',
+                    va='center'
+                )
+                ax_p_shot.set_title(
+                    f"#{jersey_no} {secilen} - Shot Map (0 Shots)",
+                    fontsize=13,
+                    color='#ffffff',
+                    fontweight='bold',
+                    pad=10
+                )
+                
+            fig_p_shot.tight_layout()
+            st.pyplot(fig_p_shot, use_container_width=True)
+            plt.close(fig_p_shot)
+            
+    else:
+        # PITCHES FOR UNUSED SUBSTITUTES (Showing clean pitch with clear information)
+        with tab_p1:
+            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+            pitch_un = Pitch(pitch_type='statsbomb', pitch_color='#0f3622', line_color='#ffffff', line_zorder=2, linewidth=1.8, goal_type='box')
+            fig_un, ax_un = pitch_un.draw(figsize=(10, 6.5))
+            fig_un.patch.set_facecolor('#09160f')
+            ax_un.text(
                 60, 40,
-                f"No shot attempts recorded for #{jersey_no} {secilen} in this match.",
-                color='#94a3b8',
+                f"#{jersey_no} {secilen} bu maçta süre almamıştır.\nSaha içi temas ve ısı haritası verisi bulunmamaktadır.",
+                color='#cbd5e1',
                 fontsize=12,
                 fontweight='bold',
                 ha='center',
-                va='center'
+                va='center',
+                bbox=dict(boxstyle='round,pad=0.8', facecolor='#0d1e15', edgecolor='rgba(255, 255, 255, 0.25)')
             )
-            ax_p_shot.set_title(
-                f"#{jersey_no} {secilen} - Shot Map (0 Shots)",
-                fontsize=13,
-                color='#ffffff',
-                fontweight='bold',
-                pad=10
-            )
+            ax_un.set_title(f"#{jersey_no} {secilen} ({pos}) - Isı Haritası (Süre Almadı / 0')", fontsize=13, color='#ffffff', fontweight='bold', pad=10)
+            fig_un.tight_layout()
+            st.pyplot(fig_un, use_container_width=True)
+            plt.close(fig_un)
             
-        fig_p_shot.tight_layout()
-        st.pyplot(fig_p_shot, use_container_width=True)
-        plt.close(fig_p_shot)
-        
+        with tab_p2:
+            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+            pitch_un2 = Pitch(pitch_type='statsbomb', pitch_color='#0f3622', line_color='#ffffff', line_zorder=2, linewidth=1.8, goal_type='box')
+            fig_un2, ax_un2 = pitch_un2.draw(figsize=(10, 6.5))
+            fig_un2.patch.set_facecolor('#09160f')
+            ax_un2.text(
+                60, 40,
+                f"#{jersey_no} {secilen} bu maçta süre almamıştır.\nPas girişimi bulunmamaktadır.",
+                color='#cbd5e1',
+                fontsize=12,
+                fontweight='bold',
+                ha='center',
+                va='center',
+                bbox=dict(boxstyle='round,pad=0.8', facecolor='#0d1e15', edgecolor='rgba(255, 255, 255, 0.25)')
+            )
+            ax_un2.set_title(f"#{jersey_no} {secilen} - Pas Haritası (Süre Almadı / 0')", fontsize=13, color='#ffffff', fontweight='bold', pad=10)
+            fig_un2.tight_layout()
+            st.pyplot(fig_un2, use_container_width=True)
+            plt.close(fig_un2)
+
+        with tab_p3:
+            st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
+            pitch_un3 = Pitch(pitch_type='statsbomb', pitch_color='#0f3622', line_color='#ffffff', line_zorder=2, linewidth=1.8, goal_type='box')
+            fig_un3, ax_un3 = pitch_un3.draw(figsize=(10, 6.5))
+            fig_un3.patch.set_facecolor('#09160f')
+            ax_un3.text(
+                60, 40,
+                f"#{jersey_no} {secilen} bu maçta süre almamıştır.\nŞut girişimi bulunmamaktadır.",
+                color='#cbd5e1',
+                fontsize=12,
+                fontweight='bold',
+                ha='center',
+                va='center',
+                bbox=dict(boxstyle='round,pad=0.8', facecolor='#0d1e15', edgecolor='rgba(255, 255, 255, 0.25)')
+            )
+            ax_un3.set_title(f"#{jersey_no} {secilen} - Şut Haritası (Süre Almadı / 0')", fontsize=13, color='#ffffff', fontweight='bold', pad=10)
+            fig_un3.tight_layout()
+            st.pyplot(fig_un3, use_container_width=True)
+            plt.close(fig_un3)
+
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Individual Charts
+    # 4. Individual Charts
     p_graf1, p_graf2 = st.columns(2)
     
     with p_graf1:
         st.markdown("#### 📊 Action Distribution")
-        act_cl = "action_type" if "action_type" in df_oyuncu.columns else "aksiyon_turu"
-        p_act = df_oyuncu[act_cl].value_counts().reset_index()
-        p_act.columns = ["Action Type", "Count"]
-        max_p_act = p_act["Count"].max() if not p_act.empty else 50
-        
-        fig_bar = px.bar(
-            p_act,
-            x="Action Type",
-            y="Count",
-            text="Count",
-            color="Count",
-            color_continuous_scale=["#164e33", "#2ed573", "#ff4757", "#e30613"]
-        )
-        fig_bar.update_traces(
-            textposition='outside',
-            textfont_color='white',
-            marker_line_color='#ffffff',
-            marker_line_width=1.2
-        )
-        fig_bar.update_layout(
-            autosize=True,
-            plot_bgcolor="rgba(16, 38, 27, 0.75)",
-            paper_bgcolor="rgba(16, 38, 27, 0.75)",
-            font_color="#ffffff",
-            xaxis=dict(showgrid=False, title="", tickfont=dict(size=11)),
-            yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Count", range=[0, max_p_act * 1.25], tickfont=dict(size=11)),
-            coloraxis_showscale=False,
-            margin=dict(l=15, r=15, t=25, b=15),
-            height=320
-        )
-        st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
-        
+        if has_played and not df_active_actions.empty:
+            act_cl = "action_type" if "action_type" in df_active_actions.columns else "aksiyon_turu"
+            p_act = df_active_actions[act_cl].value_counts().reset_index()
+            p_act.columns = ["Action Type", "Count"]
+            max_p_act = p_act["Count"].max() if not p_act.empty else 50
+            
+            fig_bar = px.bar(
+                p_act,
+                x="Action Type",
+                y="Count",
+                text="Count",
+                color="Count",
+                color_continuous_scale=["#164e33", "#2ed573", "#ff4757", "#e30613"]
+            )
+            fig_bar.update_traces(
+                textposition='outside',
+                textfont_color='white',
+                marker_line_color='#ffffff',
+                marker_line_width=1.2
+            )
+            fig_bar.update_layout(
+                autosize=True,
+                plot_bgcolor="rgba(16, 38, 27, 0.75)",
+                paper_bgcolor="rgba(16, 38, 27, 0.75)",
+                font_color="#ffffff",
+                xaxis=dict(showgrid=False, title="", tickfont=dict(size=11)),
+                yaxis=dict(showgrid=True, gridcolor="rgba(46, 213, 115, 0.15)", title="Count", range=[0, max_p_act * 1.25], tickfont=dict(size=11)),
+                coloraxis_showscale=False,
+                margin=dict(l=15, r=15, t=25, b=15),
+                height=320
+            )
+            st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
+        else:
+            st.info(f"📊 #{jersey_no} {secilen} bu karşılaşmada süre almadığı için kayıtlı aksiyon dağılımı bulunmamaktadır.")
+            
     with p_graf2:
         st.markdown("#### ⚽ Pass Completion Rate")
-        if total_passes > 0:
+        if has_played and total_passes > 0:
             pas_pie_df = pd.DataFrame({
                 "Status": ["Accurate Passes", "Incompleted Passes"],
                 "Count": [accurate_passes, inaccurate_passes]
@@ -1304,59 +1475,61 @@ else:
             )
             st.plotly_chart(fig_pie, use_container_width=True, config={'displayModeBar': False, 'responsive': True})
         else:
-            st.info("No registered pass actions for this player in this match.")
+            st.info(f"⚽ #{jersey_no} {secilen} bu karşılaşmada süre almadığı için pas tamamlama verisi bulunmamaktadır.")
 
-    # 100% English Detailed Event Logs Expander
+    # 5. Detailed Event Logs Expander
     with st.expander(f"📋 Detailed Event Logs for #{jersey_no} {secilen} ({mins_played} Minutes Played)"):
-        table_df = df_oyuncu.copy()
-        
-        display_cols = {
-            "player_name": "Player Name",
-            "jersey_number": "Jersey #",
-            "position": "Position",
-            "minutes_played": "Minutes Played",
-            "action_type": "Action Type",
-            "outcome": "Outcome",
-            "shot_detail": "Event Detail",
-            "x": "Pitch Start X",
-            "y": "Pitch Start Y",
-            "end_x": "Pitch End X",
-            "end_y": "Pitch End Y",
-            "opta_points": "Opta Rating"
-        }
-        
-        for c in display_cols.keys():
-            if c not in table_df.columns:
-                if c == "player_name":
-                    table_df["player_name"] = secilen
-                elif c == "jersey_number":
-                    table_df["jersey_number"] = jersey_no
-                elif c == "position":
-                    table_df["position"] = pos
-                elif c == "minutes_played":
-                    table_df["minutes_played"] = mins_played
-                elif c == "action_type" and "aksiyon_turu" in table_df.columns:
-                    table_df["action_type"] = table_df["aksiyon_turu"]
-                elif c == "outcome" and "basarili" in table_df.columns:
-                    table_df["outcome"] = table_df["basarili"].apply(lambda x: "Completed" if x else "Incompleted")
-                elif c == "shot_detail":
-                    table_df["shot_detail"] = table_df["action_type"]
-                elif c == "end_x":
-                    table_df["end_x"] = table_df["x"] + 10
-                elif c == "end_y":
-                    table_df["end_y"] = table_df["y"]
-                elif c == "opta_points":
-                    table_df["opta_points"] = opta_pts
+        if has_played and not df_active_actions.empty:
+            table_df = df_active_actions.copy()
+            
+            display_cols = {
+                "player_name": "Player Name",
+                "jersey_number": "Jersey #",
+                "position": "Position",
+                "minutes_played": "Minutes Played",
+                "action_type": "Action Type",
+                "outcome": "Outcome",
+                "shot_detail": "Event Detail",
+                "x": "Pitch Start X",
+                "y": "Pitch Start Y",
+                "end_x": "Pitch End X",
+                "end_y": "Pitch End Y",
+                "opta_points": "Opta Rating"
+            }
+            
+            for c in display_cols.keys():
+                if c not in table_df.columns:
+                    if c == "player_name":
+                        table_df["player_name"] = secilen
+                    elif c == "jersey_number":
+                        table_df["jersey_number"] = jersey_no
+                    elif c == "position":
+                        table_df["position"] = pos
+                    elif c == "minutes_played":
+                        table_df["minutes_played"] = mins_played
+                    elif c == "action_type" and "aksiyon_turu" in table_df.columns:
+                        table_df["action_type"] = table_df["aksiyon_turu"]
+                    elif c == "outcome" and "basarili" in table_df.columns:
+                        table_df["outcome"] = table_df["basarili"].apply(lambda x: "Completed" if x else "Incompleted")
+                    elif c == "shot_detail":
+                        table_df["shot_detail"] = table_df["action_type"]
+                    elif c == "end_x":
+                        table_df["end_x"] = table_df["x"] + 10
+                    elif c == "end_y":
+                        table_df["end_y"] = table_df["y"]
+                    elif c == "opta_points":
+                        table_df["opta_points"] = opta_pts
 
-        present_cols = [c for c in display_cols.keys() if c in table_df.columns]
-        english_table = table_df[present_cols].rename(columns=display_cols)
-        
-        st.dataframe(
-            english_table,
-            use_container_width=True,
-            hide_index=True
-        )
-
+            present_cols = [c for c in display_cols.keys() if c in table_df.columns]
+            english_table = table_df[present_cols].rename(columns=display_cols)
+            
+            st.dataframe(
+                english_table,
+                use_container_width=True,
+                hide_index=True
+            )
+        else:
+            st.info("ℹ️ Bu oyuncu karşılaşmada süre almadığı (Unused Substitute) için sisteme kayıtlı saha içi maç olayı veya temas kaydı bulunmamaktadır (0 Olay).")
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #64748b; font-size: 0.8rem; padding: 10px 0 20px 0; line-height: 1.6;">

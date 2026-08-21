@@ -70,13 +70,13 @@ bjk_players_roster = [
          {"x": 103.0, "y": 26.0, "end_x": 115.0, "end_y": 35.0, "outcome": "Blocked Shot", "xg": 0.07, "body_part": "Right Foot", "desc": "Fast break attempt blocked"}
      ]},
     {"player_name": "Kassoum Ouattara", "pos": "DF", "no": 11, "is_sub": True, "opta_points": 6.40, "minutes": 9, "sub_info": "Sub (82' in)", "passes": 10, "shots": 0, "tackles": 1, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 68, "cy": 14, "sx": 15, "sy": 10, "shot_events": []},
-    {"player_name": "Doğan Alemdar", "pos": "GK", "no": 80, "is_sub": True, "opta_points": 6.00, "minutes": 0, "sub_info": "Unused Sub", "passes": 3, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 10, "cy": 40, "sx": 4, "sy": 10, "shot_events": []},
-    {"player_name": "Emmanuel Agbadou", "pos": "DF", "no": 12, "is_sub": True, "opta_points": 6.00, "minutes": 0, "sub_info": "Unused Sub", "passes": 4, "shots": 0, "tackles": 1, "inter": 1, "chances": 0, "fouls_won": 0, "cx": 45, "cy": 35, "sx": 10, "sy": 10, "shot_events": []},
-    {"player_name": "Taylan Bulut", "pos": "DF", "no": 22, "is_sub": True, "opta_points": 6.00, "minutes": 0, "sub_info": "Unused Sub", "passes": 4, "shots": 0, "tackles": 1, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 55, "cy": 65, "sx": 10, "sy": 10, "shot_events": []},
-    {"player_name": "Yasin Özcan", "pos": "DF", "no": 58, "is_sub": True, "opta_points": 6.00, "minutes": 0, "sub_info": "Unused Sub", "passes": 4, "shots": 0, "tackles": 1, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 50, "cy": 20, "sx": 10, "sy": 10, "shot_events": []},
-    {"player_name": "Wilfred Ndidi", "pos": "MF", "no": 4, "is_sub": True, "opta_points": 6.00, "minutes": 0, "sub_info": "Unused Sub", "passes": 5, "shots": 0, "tackles": 1, "inter": 1, "chances": 0, "fouls_won": 0, "cx": 58, "cy": 40, "sx": 10, "sy": 10, "shot_events": []},
-    {"player_name": "Kartal Kayra Yılmaz", "pos": "MF", "no": 8, "is_sub": True, "opta_points": 6.00, "minutes": 0, "sub_info": "Unused Sub", "passes": 5, "shots": 0, "tackles": 1, "inter": 1, "chances": 0, "fouls_won": 0, "cx": 62, "cy": 45, "sx": 10, "sy": 10, "shot_events": []},
-    {"player_name": "Semih Kılıçsoy", "pos": "FW", "no": 90, "is_sub": True, "opta_points": 6.00, "minutes": 0, "sub_info": "Unused Sub", "passes": 4, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 95, "cy": 45, "sx": 10, "sy": 10, "shot_events": []}
+    {"player_name": "Doğan Alemdar", "pos": "GK", "no": 80, "is_sub": True, "opta_points": np.nan, "minutes": 0, "sub_info": "Unused Sub (0')", "passes": 0, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 10, "cy": 40, "sx": 4, "sy": 10, "shot_events": []},
+    {"player_name": "Emmanuel Agbadou", "pos": "DF", "no": 12, "is_sub": True, "opta_points": np.nan, "minutes": 0, "sub_info": "Unused Sub (0')", "passes": 0, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 45, "cy": 35, "sx": 10, "sy": 10, "shot_events": []},
+    {"player_name": "Taylan Bulut", "pos": "DF", "no": 22, "is_sub": True, "opta_points": np.nan, "minutes": 0, "sub_info": "Unused Sub (0')", "passes": 0, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 55, "cy": 65, "sx": 10, "sy": 10, "shot_events": []},
+    {"player_name": "Yasin Özcan", "pos": "DF", "no": 58, "is_sub": True, "opta_points": np.nan, "minutes": 0, "sub_info": "Unused Sub (0')", "passes": 0, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 50, "cy": 20, "sx": 10, "sy": 10, "shot_events": []},
+    {"player_name": "Wilfred Ndidi", "pos": "MF", "no": 4, "is_sub": True, "opta_points": np.nan, "minutes": 0, "sub_info": "Unused Sub (0')", "passes": 0, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 58, "cy": 40, "sx": 10, "sy": 10, "shot_events": []},
+    {"player_name": "Kartal Kayra Yılmaz", "pos": "MF", "no": 8, "is_sub": True, "opta_points": np.nan, "minutes": 0, "sub_info": "Unused Sub (0')", "passes": 0, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 62, "cy": 45, "sx": 10, "sy": 10, "shot_events": []},
+    {"player_name": "Semih Kılıçsoy", "pos": "FW", "no": 90, "is_sub": True, "opta_points": np.nan, "minutes": 0, "sub_info": "Unused Sub (0')", "passes": 0, "shots": 0, "tackles": 0, "inter": 0, "chances": 0, "fouls_won": 0, "cx": 95, "cy": 45, "sx": 10, "sy": 10, "shot_events": []}
 ]
 
 all_events = []
@@ -88,6 +88,10 @@ for p in bjk_players_roster:
     mins = p["minutes"]
     sub_info = p["sub_info"]
     cx, cy, sx, sy = p["cx"], p["cy"], p["sx"], p["sy"]
+    
+    # Exclude unused substitutes (0 minutes) from on-pitch match actions
+    if mins == 0:
+        continue
     
     # Passes with Start (x, y) and Destination (end_x, end_y)
     for _ in range(p["passes"]):
