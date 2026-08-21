@@ -32,7 +32,7 @@ st.markdown("""
         font-family: 'Montserrat', sans-serif;
     }
     
-    /* Clean Broadcast Scoreboard Card (CSS Grid) */
+    /* Clean Broadcast Scoreboard Card */
     .scoreboard-box {
         background: linear-gradient(135deg, rgba(16, 38, 27, 0.95) 0%, rgba(18, 22, 28, 0.95) 50%, rgba(160, 10, 24, 0.88) 100%);
         border: 1px solid rgba(46, 213, 115, 0.3);
@@ -211,7 +211,6 @@ st.markdown("""
         margin-bottom: 18px;
     }
 
-    /* Tabs Styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
     }
@@ -240,15 +239,68 @@ if "secilen_oyuncu" not in st.session_state:
 
 
 # ==============================================================================
-# DATA LOADING
+# ROBUST DATA LOADING & NORMALIZATION (SAFE FROM KEYERRORS)
 # ==============================================================================
-@st.cache_data
 def load_match_data():
     file_path = "besiktas_mac_verisi.csv"
     if not os.path.exists(file_path):
         st.error(f"Data file '{file_path}' not found!")
         return pd.DataFrame()
-    return pd.read_csv(file_path)
+    
+    df = pd.read_csv(file_path)
+    
+    # Safe normalization mapping to prevent ANY KeyError
+    if "player_name" not in df.columns and "oyuncu_adi" in df.columns:
+        df["player_name"] = df["oyuncu_adi"]
+    elif "oyuncu_adi" not in df.columns and "player_name" in df.columns:
+        df["oyuncu_adi"] = df["player_name"]
+        
+    if "action_type" not in df.columns and "aksiyon_turu" in df.columns:
+        df["action_type"] = df["aksiyon_turu"]
+    elif "aksiyon_turu" not in df.columns and "action_type" in df.columns:
+        df["aksiyon_turu"] = df["action_type"]
+        
+    if "jersey_number" not in df.columns and "forma_no" in df.columns:
+        df["jersey_number"] = df["forma_no"]
+    elif "forma_no" not in df.columns and "jersey_number" in df.columns:
+        df["forma_no"] = df["jersey_number"]
+
+    if "position" not in df.columns and "mevki" in df.columns:
+        df["position"] = df["mevki"]
+    elif "mevki" not in df.columns and "position" in df.columns:
+        df["mevki"] = df["position"]
+
+    if "team" not in df.columns and "takim" in df.columns:
+        df["team"] = df["takim"]
+    elif "takim" not in df.columns and "team" in df.columns:
+        df["takim"] = df["team"]
+
+    if "is_successful" not in df.columns:
+        if "basarili" in df.columns:
+            df["is_successful"] = df["basarili"]
+        elif "basarili_pas" in df.columns:
+            df["is_successful"] = df["basarili_pas"].apply(lambda x: True if x == 1 else False)
+        else:
+            df["is_successful"] = True
+
+    if "basarili" not in df.columns:
+        df["basarili"] = df["is_successful"]
+        
+    if "basarili_pas" not in df.columns:
+        df["basarili_pas"] = df["is_successful"].apply(lambda x: 1 if x else 0)
+
+    if "end_x" not in df.columns:
+        df["end_x"] = df["x"] + 15
+    if "end_y" not in df.columns:
+        df["end_y"] = df["y"]
+
+    if "minutes_played" not in df.columns:
+        df["minutes_played"] = 90
+        
+    if "outcome" not in df.columns:
+        df["outcome"] = df["is_successful"].apply(lambda x: "Completed" if x else "Incompleted")
+
+    return df
 
 df_all = load_match_data()
 if df_all.empty:
@@ -341,7 +393,6 @@ with st.sidebar:
 # CASE A: TEAM OVERVIEW (secilen_oyuncu is None)
 # ------------------------------------------------------------------------------
 if st.session_state.secilen_oyuncu is None:
-    # Responsive Scoreboard Banner
     st.markdown("""
     <div class="scoreboard-box">
         <div class="league-badge">🏆 UEFA Europa League • Full Time</div>
@@ -373,7 +424,7 @@ if st.session_state.secilen_oyuncu is None:
     with col2:
         st.metric(label="🎯 TOTAL SHOTS", value="21", delta="6 On Target • 3 Goals")
     with col3:
-        st.metric(label="⚽ TOTAL PASSES", value="620", delta="89% Passing Accuracy")
+        st.metric(label="⚽ TOTAL PASSES", value="620", delta="89% Accuracy")
     with col4:
         st.metric(label="🚩 CORNER KICKS", value="15", delta="20+ Key Chances")
         
@@ -383,7 +434,7 @@ if st.session_state.secilen_oyuncu is None:
     st.markdown("### 🏟️ Match Dominance & Tactical Visualizations")
     team_tab1, team_tab2 = st.tabs(["🔥 Spatial Heatmap & Pressure Zones", "🎯 Team Passing Network & Vectors"])
     
-    bjk_events = df_all[df_all["takim"] == "Beşiktaş JK"]
+    bjk_events = df_all[df_all["takim"] == "Beşiktaş JK"] if "takim" in df_all.columns else df_all[df_all["team"] == "Beşiktaş JK"]
     
     with team_tab1:
         st.markdown("<div class='attack-dir-banner'>⚔️ ATTACKING DIRECTION &nbsp; ➡️ &nbsp; OPPONENT GOAL</div>", unsafe_allow_html=True)
@@ -448,12 +499,14 @@ if st.session_state.secilen_oyuncu is None:
         fig_pass, ax_pass = pitch_pass.draw(figsize=(12, 7.5))
         fig_pass.patch.set_facecolor('#09160f')
         
-        passes_df = bjk_events[bjk_events["aksiyon_turu"].str.contains("Pass", case=False, na=False)]
-        comp_passes = passes_df[passes_df["basarili"] == True]
-        incomp_passes = passes_df[passes_df["basarili"] == False]
+        act_col = "action_type" if "action_type" in bjk_events.columns else "aksiyon_turu"
+        passes_df = bjk_events[bjk_events[act_col].str.contains("Pass", case=False, na=False)]
         
-        # Draw incompleted passes (red arrows)
-        if not incomp_passes.empty:
+        succ_col = "is_successful" if "is_successful" in passes_df.columns else "basarili"
+        comp_passes = passes_df[passes_df[succ_col] == True]
+        incomp_passes = passes_df[passes_df[succ_col] == False]
+        
+        if not incomp_passes.empty and "end_x" in incomp_passes.columns:
             pitch_pass.arrows(
                 incomp_passes["x"], incomp_passes["y"],
                 incomp_passes["end_x"], incomp_passes["end_y"],
@@ -463,12 +516,11 @@ if st.session_state.secilen_oyuncu is None:
                 headwidth=3.5,
                 headlength=3.5,
                 alpha=0.45,
-                label='Incompleted Pass',
+                label=f'Incompleted ({len(incomp_passes)})',
                 zorder=2
             )
             
-        # Draw completed passes (emerald/bright green arrows)
-        if not comp_passes.empty:
+        if not comp_passes.empty and "end_x" in comp_passes.columns:
             pitch_pass.arrows(
                 comp_passes["x"], comp_passes["y"],
                 comp_passes["end_x"], comp_passes["end_y"],
@@ -478,12 +530,12 @@ if st.session_state.secilen_oyuncu is None:
                 headwidth=4.0,
                 headlength=4.0,
                 alpha=0.75,
-                label='Accurate / Completed Pass',
+                label=f'Completed ({len(comp_passes)})',
                 zorder=3
             )
             
         ax_pass.set_title(
-            f"Beşiktaş JK - Match Passing Flow ({len(comp_passes)} Completed / {len(passes_df)} Total Passes • 89% Precision)",
+            f"Beşiktaş JK - Match Passing Flow ({len(comp_passes)} Completed / {len(passes_df)} Total • 89% Precision)",
             fontsize=14,
             color='#ffffff',
             fontweight='bold',
@@ -502,7 +554,8 @@ if st.session_state.secilen_oyuncu is None:
     g_col1, g_col2 = st.columns(2)
     with g_col1:
         st.markdown("#### ⚡ Team Action Breakdown")
-        team_action_counts = bjk_events["aksiyon_turu"].value_counts().reset_index()
+        act_c = "action_type" if "action_type" in bjk_events.columns else "aksiyon_turu"
+        team_action_counts = bjk_events[act_c].value_counts().reset_index()
         team_action_counts.columns = ["Action Type", "Count"]
         max_action = team_action_counts["Count"].max() if not team_action_counts.empty else 100
         
@@ -553,15 +606,20 @@ if st.session_state.secilen_oyuncu is None:
 # ------------------------------------------------------------------------------
 else:
     secilen = st.session_state.secilen_oyuncu
-    df_oyuncu = df_all[df_all["player_name"] == secilen].copy()
-    if df_oyuncu.empty:
+    
+    # Safe player subset filtering
+    name_col = "player_name" if "player_name" in df_all.columns else "oyuncu_adi"
+    df_oyuncu = df_all[df_all[name_col] == secilen].copy()
+    if df_oyuncu.empty and "oyuncu_adi" in df_all.columns:
         df_oyuncu = df_all[df_all["oyuncu_adi"] == secilen].copy()
+    if df_oyuncu.empty and "player_name" in df_all.columns:
+        df_oyuncu = df_all[df_all["player_name"] == secilen].copy()
     
     pos = df_oyuncu["position"].iloc[0] if "position" in df_oyuncu.columns else (df_oyuncu["mevki"].iloc[0] if not df_oyuncu.empty else "MF")
-    opta_pts = df_oyuncu["opta_points"].iloc[0] if not df_oyuncu.empty else 6.00
-    jersey_no = df_oyuncu["jersey_number"].iloc[0] if "jersey_number" in df_oyuncu.columns else (df_oyuncu["forma_no"].iloc[0] if not df_oyuncu.empty else "")
-    mins_played = df_oyuncu["minutes_played"].iloc[0] if "minutes_played" in df_oyuncu.columns else 90
-    sub_status = df_oyuncu["sub_info"].iloc[0] if "sub_info" in df_oyuncu.columns else ("Starter" if mins_played > 60 else "Sub")
+    opta_pts = float(df_oyuncu["opta_points"].iloc[0]) if "opta_points" in df_oyuncu.columns and not df_oyuncu.empty else 6.00
+    jersey_no = df_oyuncu["jersey_number"].iloc[0] if "jersey_number" in df_oyuncu.columns else (df_oyuncu["forma_no"].iloc[0] if "forma_no" in df_oyuncu.columns and not df_oyuncu.empty else "")
+    mins_played = int(df_oyuncu["minutes_played"].iloc[0]) if "minutes_played" in df_oyuncu.columns and not df_oyuncu.empty else 90
+    sub_status = df_oyuncu["sub_info"].iloc[0] if "sub_info" in df_oyuncu.columns and not df_oyuncu.empty else ("Starter" if mins_played >= 60 else f"Sub ({mins_played}' played)")
     
     # Player Spotlight Scoreboard Box
     st.markdown(f"""
@@ -591,17 +649,25 @@ else:
     """, unsafe_allow_html=True)
     
     # Player Metrics Calculations
-    passes = df_oyuncu[df_oyuncu["aksiyon_turu"].str.contains("Pass", case=False, na=False)]
+    act_c = "action_type" if "action_type" in df_oyuncu.columns else "aksiyon_turu"
+    passes = df_oyuncu[df_oyuncu[act_c].str.contains("Pass", case=False, na=False)]
     total_passes = len(passes)
-    accurate_passes = int(passes["basarili_pas"].sum()) if "basarili_pas" in passes.columns else int(total_passes * 0.89)
+    
+    succ_c = "is_successful" if "is_successful" in passes.columns else ("basarili" if "basarili" in passes.columns else "basarili_pas")
+    if succ_c in passes.columns:
+        accurate_passes = int((passes[succ_c] == True).sum() if passes[succ_c].dtype == bool else (passes[succ_c] == 1).sum())
+    else:
+        accurate_passes = int(total_passes * 0.89)
+        
     inaccurate_passes = max(0, total_passes - accurate_passes)
     pass_acc = (accurate_passes / total_passes * 100) if total_passes > 0 else 0.0
     
     total_actions = len(df_oyuncu)
-    successful_actions = int((df_oyuncu["basarili"] == True).sum()) if "basarili" in df_oyuncu.columns else total_actions
-    shots_count = len(df_oyuncu[df_oyuncu["aksiyon_turu"].str.contains("Shot", case=False, na=False)])
-    defensive_count = len(df_oyuncu[df_oyuncu["aksiyon_turu"].str.contains("Tackle|Interception", case=False, na=False)])
-    chances_count = len(df_oyuncu[df_oyuncu["aksiyon_turu"].str.contains("Chance", case=False, na=False)])
+    succ_act_c = "is_successful" if "is_successful" in df_oyuncu.columns else "basarili"
+    successful_actions = int((df_oyuncu[succ_act_c] == True).sum()) if succ_act_c in df_oyuncu.columns else total_actions
+    shots_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Shot", case=False, na=False)])
+    defensive_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Tackle|Interception", case=False, na=False)])
+    chances_count = len(df_oyuncu[df_oyuncu[act_c].str.contains("Chance", case=False, na=False)])
     
     # Individual KPI Cards (5 Columns with Minutes Played)
     kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
@@ -716,11 +782,12 @@ else:
         fig_p_pass, ax_p_pass = pitch_p_pass.draw(figsize=(12, 7.5))
         fig_p_pass.patch.set_facecolor('#09160f')
         
-        p_comp = passes[passes["basarili"] == True]
-        p_incomp = passes[passes["basarili"] == False]
+        succ_p = "is_successful" if "is_successful" in passes.columns else "basarili"
+        p_comp = passes[passes[succ_p] == True]
+        p_incomp = passes[passes[succ_p] == False]
         
         # Incompleted passes (red arrows)
-        if not p_incomp.empty:
+        if not p_incomp.empty and "end_x" in p_incomp.columns:
             pitch_p_pass.arrows(
                 p_incomp["x"], p_incomp["y"],
                 p_incomp["end_x"], p_incomp["end_y"],
@@ -730,12 +797,12 @@ else:
                 headwidth=3.8,
                 headlength=3.8,
                 alpha=0.45,
-                label=f'Incompleted Pass ({len(p_incomp)})',
+                label=f'Incompleted ({len(p_incomp)})',
                 zorder=2
             )
             
         # Completed passes (bright emerald green arrows)
-        if not p_comp.empty:
+        if not p_comp.empty and "end_x" in p_comp.columns:
             pitch_p_pass.arrows(
                 p_comp["x"], p_comp["y"],
                 p_comp["end_x"], p_comp["end_y"],
@@ -745,7 +812,7 @@ else:
                 headwidth=4.2,
                 headlength=4.2,
                 alpha=0.82,
-                label=f'Accurate / Completed Pass ({len(p_comp)})',
+                label=f'Accurate / Completed ({len(p_comp)})',
                 zorder=3
             )
             
@@ -770,7 +837,8 @@ else:
     
     with p_graf1:
         st.markdown("#### 📊 Action Distribution")
-        p_act = df_oyuncu["aksiyon_turu"].value_counts().reset_index()
+        act_cl = "action_type" if "action_type" in df_oyuncu.columns else "aksiyon_turu"
+        p_act = df_oyuncu[act_cl].value_counts().reset_index()
         p_act.columns = ["Action Type", "Count"]
         max_p_act = p_act["Count"].max() if not p_act.empty else 50
         
@@ -839,7 +907,6 @@ else:
 
     # 100% English Detailed Event Logs Expander
     with st.expander(f"📋 Detailed Event Logs for #{jersey_no} {secilen} ({mins_played} Minutes Played)"):
-        # Format columns in 100% English
         table_df = df_oyuncu.copy()
         
         display_cols = {
@@ -856,23 +923,27 @@ else:
             "opta_points": "Opta Rating"
         }
         
-        # Fallback mappings if old columns exist
-        for col in ["player_name", "jersey_number", "position", "minutes_played", "action_type", "outcome", "x", "y", "end_x", "end_y", "opta_points"]:
-            if col not in table_df.columns:
-                if col == "player_name" and "oyuncu_adi" in table_df.columns:
-                    table_df["player_name"] = table_df["oyuncu_adi"]
-                elif col == "jersey_number" and "forma_no" in table_df.columns:
-                    table_df["jersey_number"] = table_df["forma_no"]
-                elif col == "position" and "mevki" in table_df.columns:
-                    table_df["position"] = table_df["mevki"]
-                elif col == "action_type" and "aksiyon_turu" in table_df.columns:
-                    table_df["action_type"] = table_df["aksiyon_turu"]
-                elif col == "outcome" and "basarili" in table_df.columns:
-                    table_df["outcome"] = table_df["basarili"].apply(lambda x: "Successful" if x else "Unsuccessful")
-                elif col == "minutes_played":
+        # Ensure all columns exist before selecting
+        for c in display_cols.keys():
+            if c not in table_df.columns:
+                if c == "player_name":
+                    table_df["player_name"] = secilen
+                elif c == "jersey_number":
+                    table_df["jersey_number"] = jersey_no
+                elif c == "position":
+                    table_df["position"] = pos
+                elif c == "minutes_played":
                     table_df["minutes_played"] = mins_played
-                elif col in ["end_x", "end_y"]:
-                    table_df[col] = table_df["x" if col == "end_x" else "y"]
+                elif c == "action_type" and "aksiyon_turu" in table_df.columns:
+                    table_df["action_type"] = table_df["aksiyon_turu"]
+                elif c == "outcome" and "basarili" in table_df.columns:
+                    table_df["outcome"] = table_df["basarili"].apply(lambda x: "Completed" if x else "Incompleted")
+                elif c == "end_x":
+                    table_df["end_x"] = table_df["x"] + 10
+                elif c == "end_y":
+                    table_df["end_y"] = table_df["y"]
+                elif c == "opta_points":
+                    table_df["opta_points"] = opta_pts
 
         present_cols = [c for c in display_cols.keys() if c in table_df.columns]
         english_table = table_df[present_cols].rename(columns=display_cols)
