@@ -34,8 +34,7 @@ An interactive **Master-Detail** football analytics dashboard built with **Strea
 ├── mac_olaylari_incidents.csv  # Match timeline and incident events (goals, subs, cards)
 ├── mac_takim_istatistikleri.csv# Team-level summary statistics
 ├── sofascore_api_raw.json      # Raw JSON API snapshot from match day
-├── requirements.txt            # Python dependencies
-└── Prompts/                    # Project requirement documentation
+└── requirements.txt            # Python dependencies
 ```
 
 ---
